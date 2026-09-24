@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>渠道侧 RP 露出配置 — Dida 运营后台</title>
+<style>
+  :root {
+    --sidebar-bg: #1e293b;
+    --sidebar-hover: #334155;
+    --sidebar-active: #3b82f6;
+    --sidebar-text: #94a3b8;
+    --sidebar-text-active: #fff;
+    --body-bg: #f1f5f9;
+    --card-bg: #fff;
+    --border: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --accent: #3b82f6;
+    --accent-light: #eff6ff;
+    --green: #10b981;
+    --green-light: #ecfdf5;
+    --orange: #f59e0b;
+    --orange-light: #fffbeb;
+    --purple: #8b5cf6;
+    --purple-light: #f5f3ff;
+    --red: #ef4444;
+    --red-light: #fef2f2;
+    --teal: #14b8a6;
+    --teal-light: #f0fdfa;
+    --radius: 8px;
+    --radius-sm: 6px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--body-bg);
+    color: var(--text-primary);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 200px; min-width: 200px;
+    background: var(--sidebar-bg);
+    display: flex; flex-direction: column;
+    font-size: 13.5px;
+  }
+  .sidebar-logo {
+    padding: 18px 18px 14px;
+    font-size: 15px; font-weight: 700;
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .sidebar-logo span { color: #60a5fa; }
+  .sidebar-nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+  .sidebar-label {
+    font-size: 12px; color: var(--sidebar-text);
+    padding: 10px 16px;
+  }
+
+  /* ── Main ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .header {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px; height: 50px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .breadcrumb { font-size: 12.5px; color: var(--text-muted); }
+  .breadcrumb a { color: var(--accent); text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb .sep { margin: 0 6px; }
+  .header-title { font-size: 15px; font-weight: 600; }
+
+  .content { flex: 1; overflow-y: auto; padding: 20px 24px 32px; }
+
+  /* ── Pipeline bar ── */
+  .pipeline-bar {
+    display: flex; align-items: center; gap: 0;
+    margin-bottom: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    overflow-x: auto;
+  }
+  .pipe-step {
+    display: flex; align-items: center; gap: 8px;
+    white-space: nowrap;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    transition: background 0.12s;
+  }
+  .pipe-step:hover { background: #f8fafc; }
+  .pipe-step.active { background: var(--accent-light); }
+  .pipe-dot {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .pipe-label { font-size: 12px; color: var(--text-secondary); }
+  .pipe-step.active .pipe-label { color: var(--accent); font-weight: 600; }
+  .pipe-arrow { color: var(--text-muted); font-size: 13px; margin: 0 2px; flex-shrink: 0; }
+
+  .pipe-step[data-step="1"] .pipe-dot { background: var(--accent); }
+  .pipe-step[data-step="2"] .pipe-dot { background: var(--green); }
+  .pipe-step[data-step="3"] .pipe-dot { background: var(--orange); }
+  .pipe-step[data-step="4"] .pipe-dot { background: var(--purple); }
+  .pipe-step[data-step="5"] .pipe-dot { background: var(--teal); }
+
+  /* ── Section ── */
+  .section { display: none; }
+  .section.active { display: block; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .section-title { font-size: 15px; font-weight: 700; }
+  .section-desc { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5; }
+
+  /* ─ Config list ── */
+  .config-list { display: flex; flex-direction: column; gap: 12px; }
+  .config-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .config-item-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    cursor: pointer; user-select: none;
+    transition: background 0.1s;
+  }
+  .config-item-header:hover { background: #f8fafc; }
+  .config-item-header .left { display: flex; align-items: center; gap: 10px; }
+  .config-key-tag {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 12px;
+    background: #f1f5f9;
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .config-brief { font-size: 12.5px; color: var(--text-secondary); }
+  .config-toggle { font-size: 14px; color: var(--text-muted); transition: transform 0.2s; }
+  .config-item.open .config-toggle { transform: rotate(180deg); }
+  .config-item-body {
+    display: none;
+    padding: 0 16px 14px;
+    border-top: 1px solid var(--border);
+  }
+  .config-item.open .config-item-body { display: block; }
+
+  /* ─ Detail elements ── */
+  .detail-row { margin-top: 12px; font-size: 12.5px; line-height: 1.6; color: var(--text-secondary); }
+  .detail-row strong { color: var(--text-primary); }
+  .detail-table {
+    width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px;
+  }
+  .detail-table th, .detail-table td {
+    border: 1px solid var(--border);
+    padding: 6px 10px; text-align: left;
+  }
+  .detail-table th { background: #f8fafc; font-weight: 600; color: var(--text-secondary); font-size: 11.5px; }
+  .detail-table td { color: var(--text-secondary); }
+  .mono { font-family: "SFMono-Regular", Consolas, monospace; font-size: 11.5px; color: var(--accent); }
+  .json-block {
+    background: #1e293b; color: #e2e8f0;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 11.5px; padding: 12px 14px; border-radius: var(--radius-sm);
+    margin-top: 8px; line-height: 1.7; overflow-x: auto; white-space: pre;
+  }
+  .flow-steps { display: flex; flex-direction: column; gap: 0; margin-top: 8px; }
+  .flow-step-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 12px; background: #f8fafc;
+    font-size: 12px; color: var(--text-secondary); line-height: 1.5;
+  }
+  .flow-step-row:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+  .flow-step-row:last-child { border-radius: 0 0 var(--radius-sm) var(--radius-sm); }
+  .flow-step-row .fs-num {
+    width: 20px; height: 20px;
+    border-radius: 50%; background: var(--accent);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+  .flow-step-row .fs-text { flex: 1; }
+  .tag {
+    display: inline-block; font-size: 11px; padding: 1px 7px;
+    border-radius: 10px; font-weight: 500; margin-left: 4px;
+  }
+  .tag-blue { background: var(--accent-light); color: var(--accent); }
+  .tag-green { background: var(--green-light); color: var(--green); }
+  .tag-orange { background: var(--orange-light); color: var(--orange); }
+  .tag-red { background: var(--red-light); color: var(--red); }
+  .tag-purple { background: var(--purple-light); color: var(--purple); }
+  .tag-teal { background: var(--teal-light); color: var(--teal); }
+
+  .rel-diagram {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin-top: 10px; padding: 12px 14px;
+    background: #f8fafc; border-radius: var(--radius-sm);
+  }
+  .rel-node {
+    padding: 6px 12px; border-radius: var(--radius-sm);
+    font-size: 12px; font-weight: 600; white-space: nowrap;
+  }
+  .rel-arrow { color: var(--text-muted); font-size: 16px; }
+
+  .note-box {
+    margin-top: 12px; padding: 10px 14px;
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 12px; color: var(--text-secondary); line-height: 1.6;
+  }
+  .note-box strong { color: var(--text-primary); }
+  .note-box.warn {
+    background: var(--orange-light);
+    border-left-color: var(--orange);
+  }
+
+  .sub-title {
+    font-size: 13px; font-weight: 600; color: var(--text-primary);
+    margin: 16px 0 8px; padding-left: 8px;
+    border-left: 3px solid var(--accent);
+  }
+  .sub-title.green { border-left-color: var(--green); }
+  .sub-title.orange { border-left-color: var(--orange); }
+  .sub-title.purple { border-left-color: var(--purple); }
+
+  .formula-box {
+    background: #1e293b; color: #e2e8f0;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 12px; padding: 10px 14px; border-radius: var(--radius-sm);
+    margin-top: 8px; line-height: 1.6; overflow-x: auto;
+  }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ Sidebar ═══ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">Dida<span>Admin</span></div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-label">RP 露出配置</div>
+  </nav>
+</aside>
+
+<!-- ═══ Main ═══ -->
+<div class="main">
+  <header class="header">
+    <div class="breadcrumb"><a href="#">RP 露出管理</a><span class="sep">/</span>配置总览</div>
+    <div class="header-title">渠道侧 RP 露出配置</div>
+  </header>
+
+  <div class="content">
+
+    <!-- Pipeline bar — 5 步 -->
+    <div class="pipeline-bar">
+      <div class="pipe-step active" data-step="1" onclick="showSection(0)"><div class="pipe-dot">①</div><div class="pipe-label">国籍处理</div></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step" data-step="2" onclick="showSection(1)"><div class="pipe-dot">②</div><div class="pipe-label">坑位合并</div></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step" data-step="3" onclick="showSection(2)"><div class="pipe-dot">③</div><div class="pipe-label">RP 过滤</div></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step" data-step="4" onclick="showSection(3)"><div class="pipe-dot">④</div><div class="pipe-label">输出策略</div></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step" data-step="5" onclick="showSection(4)"><div class="pipe-dot">⑤</div><div class="pipe-label">返回渠道</div></div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         Section ① 国籍处理
+         ════════════════════════════════════════ -->
+    <div class="section active" id="sec-0">
+      <div class="section-title">① 国籍处理</div>
+      <div class="section-desc">控制<strong>用什么国籍去查供应商</strong>，以及<strong>查回来的 RP 哪些有资格露出</strong>。三个配置联动。</div>
+
+      <div class="rel-diagram">
+        <div class="rel-node" style="background:var(--red-light);color:var(--red)">CheckNationalityClient</div>
+        <div class="rel-arrow">→</div>
+        <div class="rel-node" style="background:var(--orange-light);color:var(--orange)">SubClientID</div>
+        <div class="rel-arrow">→</div>
+        <div class="rel-node" style="background:var(--accent-light);color:var(--accent)">NationalityHackUnified</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-left:auto;">拦截 → 忽略国籍 → Hack 国籍</div>
+      </div>
+
+      <div class="config-list" style="margin-top:16px;">
+
+        <!-- CheckNationalityClient -->
+        <div class="config-item">
+          <div class="config-item-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="left">
+              <span class="config-key-tag">CheckNationalityClient</span>
+              <span class="config-brief">强制检查国籍（DidaAPI ONLY）</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-item-body">
+            <div class="detail-row"><strong>作用：</strong>控制 ARI 和 Rate 场景下是否检查国籍限制。</div>
+            <div class="detail-row"><strong>ARI 场景：</strong>控制 ARI 接口是否检查国籍限制</div>
+            <div class="detail-row"><strong>Rate 场景：</strong>控制是否开启 <strong>Nationality Free</strong> 功能
+              <ul style="margin-top:4px;padding-left:18px;">
+                <li>配置为<strong>否</strong>（默认）→ Nationality Free：国籍被过滤时直接返回报价，不执行 NationalityFilter</li>
+                <li>配置为<strong>是</strong> → 开启国籍限制：检查 RP 的售卖国籍是否匹配，不匹配的 RP 被过滤</li>
+              </ul>
+            </div>
+            <div class="detail-row"><strong>位置：</strong>WolfV2 → 机构配置 → 国籍类</div>
+            <div class="detail-row"><strong>配置示例：</strong>渠道: <span class="mono">DidaAPI</span>，供应商: <span class="mono">429 (DaoLv)</span>，国籍: <span class="mono">ID</span>，配置为 <strong>Yes</strong> → 该组合执行国籍限制检查</div>
+          </div>
+        </div>
+
+        <!-- SubClientID -->
+        <div class="config-item">
+          <div class="config-item-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="left">
+              <span class="config-key-tag">SubClientID</span>
+              <span class="config-brief">忽略国籍限制（NationalitySubChannelID）</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-item-body">
+            <div class="detail-row"><strong>作用：</strong>为机构指定子渠道（SubChannel），应用于 <strong>ARI</strong> 和 <strong>Rate</strong> 两个场景。</div>
+            <div class="detail-row"><strong>JSON 结构：</strong></div>
+            <div class="json-block">{
+  "SubChannelConfigs": {
+    "DidaOpaq": {
+      "NationalitySubChannelID": {
+        "None": [],                // 不限制国籍
+        "International": ["2"],    // 外宾：允许卖其他国籍 RP
+        "Domestic": ["3"],         // 内宾：只卖当前酒店国籍客人的 RP
+        "China": ["4"]             // 中宾：允许卖 CN, TW, HK 的 RP
+      }
+    }
+  }
+}</div>
+            <div class="detail-row" style="margin-top:10px;"><strong>NationalitySubChannelID 四档：</strong></div>
+            <div class="detail-table">
+              <thead><tr><th>档位</th><th>值</th><th>含义</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">None</td><td>空数组</td><td>不限制国籍的渠道</td></tr>
+                <tr><td class="mono">International</td><td>["2"]</td><td>外宾：允许卖其他国籍 RP</td></tr>
+                <tr><td class="mono">Domestic</td><td>["3"]</td><td>内宾：只卖当前酒店国籍客人的 RP</td></tr>
+                <tr><td class="mono">China</td><td>["4"]</td><td>中宾：允许卖 CN、TW、HK 的 RP</td></tr>
+              </tbody>
+            </div>
+            <div class="detail-row" style="margin-top:10px;"><strong>忽略国籍触发条件（需同时满足）：</strong></div>
+            <div class="flow-steps">
+              <div class="flow-step-row"><div class="fs-num">1</div><div class="fs-text">机构请求的供应商为 <strong>EBK + DC</strong> 业务类型</div></div>
+              <div class="flow-step-row"><div class="fs-num">2</div><div class="fs-text">查价时<strong>没有传国籍</strong></div></div>
+              <div class="flow-step-row"><div class="fs-num">3</div><div class="fs-text">机构配置了 SubChannelID</div></div>
+            </div>
+            <div class="note-box">满足以上三点 → 自动标记国籍为 CN + 标记忽略国籍（后续不过滤 RP 的国籍限制）</div>
+            <div class="detail-row"><strong>如何关闭：</strong>设 <code style="font-family:monospace;font-size:11.5px">"NationalitySubChannelID": {}</code> 即可。</div>
+          </div>
+        </div>
+
+        <!-- NationalityHackUnified -->
+        <div class="config-item">
+          <div class="config-item-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="left">
+              <span class="config-key-tag">NationalityHackUnified</span>
+              <span class="config-brief">国籍 Hack 统一配置</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-item-body">
+            <div class="detail-row"><strong>作用：</strong>当国籍被过滤时，通过配置决定最终用什么国籍去查供应商。仅用于 <strong>Rate（查价/验价）</strong> 场景。</div>
+            <div class="detail-row"><strong>执行逻辑：</strong>按优先级从高到低依次匹配，<strong>命中即止</strong>，输出两个结果：
+              <ul style="margin-top:4px;padding-left:18px;">
+                <li><strong>NationalityOutput</strong>：最终用什么国籍去查供应商</li>
+                <li><strong>HackLiability</strong>：因国籍问题产生争议单时的责任归属（Channel / Supplier / Dida）</li>
+              </ul>
+            </div>
+            <div class="detail-row" style="margin-top:10px;"><strong>优先级（从高到低）：</strong></div>
+            <div class="detail-table">
+              <thead><tr><th>优先级</th><th>配置节点</th><th>说明</th></tr></thead>
+              <tbody>
+                <tr><td>1（最高）</td><td class="mono">ClientSupplierRules</td><td>最细粒度：渠道 + 供应商 + 酒店国家 + 请求国籍 组合精确匹配。每条规则可单独指定 HackLiability</td></tr>
+                <tr><td>2</td><td class="mono">ClientRules.ClientOverrides</td><td>机构级统一：CS 级别未命中时，按机构统一指定国籍。可指定 HackLiability</td></tr>
+                <tr><td>3</td><td class="mono">ClientRules.BaseSettings</td><td>代码硬编码兜底：GetFromOptionsInput → GetFromCRM → CN</td></tr>
+              </tbody>
+            </div>
+            <div class="detail-row" style="margin-top:10px;"><strong>CS 级别匹配条件优先级：</strong></div>
+            <div class="detail-table">
+              <thead><tr><th>优先级</th><th>条件组合</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>ClientIDList + DidaHotelCountryCode + OptionsInput</td></tr>
+                <tr><td>2</td><td>ClientIDList + DidaHotelCountryCode</td></tr>
+                <tr><td>3</td><td>ClientIDList + OptionsInput</td></tr>
+                <tr><td>4</td><td>ClientIDList</td></tr>
+              </tbody>
+            </div>
+            <div class="detail-row" style="margin-top:10px;">
+              <strong>HackLiability（责任方）：</strong>
+              <span class="tag tag-blue">Channel</span>
+              <span class="tag tag-green">Supplier</span>
+              <span class="tag tag-orange">Dida</span>（默认）
+            </div>
+            <div class="note-box warn"><strong>特殊规则：</strong>当 HackLiability 为 Channel 且输出国籍与渠道输入不同时 → 返回 ChannelInput（渠道原始国籍），不使用修改后的国籍。</div>
+
+            <div class="sub-title green">ClientActionStrategy（渠道级覆盖策略）</div>
+            <div class="detail-table">
+              <thead><tr><th>策略值</th><th>含义</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">UseRequestNationality</td><td>使用渠道请求中的原始国籍</td></tr>
+                <tr><td class="mono">UseDidaHotelCountryCode</td><td>使用酒店所在国国籍</td></tr>
+                <tr><td>两位国籍码（如 <code style="font-family:monospace;font-size:11.5px">KR</code>）</td><td>强制指定该国籍</td></tr>
+              </tbody>
+            </div>
+            <div class="detail-row">可选 <span class="mono">DidaHotelCountryMap</span>：先按国家映射表匹配，命中则直接返回映射后的国籍；未命中再走 ClientActionStrategy。</div>
+
+            <div class="sub-title orange">IgnoreHackRules（跳过国籍 Hack 白名单）</div>
+            <div class="detail-row">配置哪些订单流程跳过 Hack；以及人工补单流程中哪些供应商<strong>必须</strong>走 Hack。</div>
+            <div class="json-block">{
+  "BookingFlows": {
+    "ManualRepair": {
+      "ForceHackSupplierIDs": [429]
+    }
+  }
+}</div>
+
+            <div class="sub-title">完整 JSON 示例</div>
+            <div class="json-block">{
+  "ClientSupplierRules": {
+    "429": [{
+      "ClientIDList": ["Agoda"],
+      "DidaHotelCountryCode": "HK",
+      "NationalityOutput": "CN"
+    }],
+    "-1": [{"NationalityOutput": "ChannelInput"}]
+  },
+  "ClientRules": {
+    "BaseSettings": {
+      "DefaultSetting": {
+        "Steps": ["GetFromOptionsInput", "GetFromCRM", "CN"]
+      }
+    },
+    "ClientOverrides": {
+      "YanoljaB2B": {
+        "ClientActionStrategy": "KR",
+        "HackLiability": "Channel"
+      }
+    }
+  }
+}</div>
+          </div>
+        </div>
+
+        <!-- 执行顺序待确认提示 -->
+        <div class="note-box warn" style="margin-top:16px;">
+          <strong>⚠️ 待讨论：</strong>三个配置（CheckNationalityClient / SubClientID / NationalityHackUnified）之间的执行顺序尚无明确文档说明，需找开发确认。
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         Section ② 坑位合并（RP 合并）
+         ════════════════════════════════════════ -->
+    <div class="section" id="sec-1">
+      <div class="section-title"> 坑位合并（RP 合并）</div>
+      <div class="section-desc">按<strong>房型+床型+餐型+能否取消</strong>的坑位组合，将供应商返回的 RP 做分组聚合，去除重复报价，减少渠道端计算量。</div>
+
+      <div class="config-list">
+        <div class="config-item open">
+          <div class="config-item-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="left">
+              <span class="config-key-tag">Channel.MergeRatePlan.Config</span>
+              <span class="config-brief">RP 合并 / 轮转配置（Channel + ClientID + Format）</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-item-body">
+            <div class="detail-row"><strong>JSON 结构：</strong></div>
+            <div class="json-block">{
+  "IsGlobalMergeRPEnabled": true,
+  "GlobalMergeRPHotelRateCache": 60,
+  "ChannelClients": {
+    "ClientA": { "Enable": true, "CacheTimeOutMinutes": 30 },
+    "ClientB": { "Enable": false }
+  }
+}</div>
+
+            <div class="sub-title green">什么是"坑位"</div>
+            <div class="detail-row">渠道在展示时只固定展示几种条件的报价，通用取值组合是 <strong>房型 + 床型 + 餐型 + 能否取消</strong>。RP 合并就是按坑位常见条件组合聚合供应商的 RatePlan，去除重复报价。</div>
+
+            <div class="sub-title">聚合的维度（含 IsForceAsNonRefund）</div>
+            <div class="detail-table">
+              <thead><tr><th>#</th><th>维度</th><th>说明</th></tr></thead>
+              <tbody>
+                <tr><td>2</td><td class="mono">RoomTypeID</td><td>DidaRoomTypeID</td></tr>
+                <tr><td>3</td><td class="mono">MealTypeID</td><td>DidaMealTypeID</td></tr>
+                <tr><td>4</td><td class="mono">MealAmount</td><td>餐食数量</td></tr>
+                <tr><td>5</td><td class="mono">BedTypeID</td><td>DidaBedTypeID</td></tr>
+                <tr><td>6</td><td class="mono">IsOnRequest</td><td>是否待确认（0 即时 / 1 待确认）</td></tr>
+                <tr><td>7</td><td class="mono">IsHourlyRoom</td><td>是否钟点房</td></tr>
+                <tr><td>8</td><td class="mono">IsNonRefundable</td><td>是否不可退款</td></tr>
+                <tr><td>9</td><td class="mono">RatePaymentTypeID</td><td>支付方式</td></tr>
+                <tr><td>10</td><td class="mono">SubClientID</td><td>资源上的 ClientID</td></tr>
+                <tr><td>11</td><td class="mono">DidaValueAddItemIDs</td><td>增值服务 ID 集合</td></tr>
+                <tr><td>12</td><td class="mono">InvoiceAcquireTypeID</td><td>开票人类型</td></tr>
+                <tr><td>13</td><td class="mono">IsForceAsNonRefund</td><td>复制的不可取消 RP（天然不同组，不参与合并）</td></tr>
+              </tbody>
+            </div>
+
+            <div class="sub-title">组内取值规则</div>
+            <div class="formula-box">OrderBy(TotalPrice).ThenByDescending(CancellationList.First().FromDate)
+// 取分组中价格最低、且免取时间最晚的一条</div>
+
+            <div class="sub-title orange">MergeRatePlanID 生成</div>
+            <div class="detail-row">将上述维度按固定顺序拼接，再做 <strong>Base62 编码</strong>，最终格式为 <code style="font-family:monospace;font-size:11.5px">MergeRatePlanID-DidaRatePlanID</code>，例如 <span class="mono">4il47aNbtmi-cgestWE0GcT</span>。</div>
+            <div class="note-box">Base62 编码后不一定都是 11 位，也可能是 10 位（如 <span class="mono">9gR7Y17hyl-adC1EHXQBuc</span>）。</div>
+
+            <div class="sub-title purple">MergeRatePlanID 解码回查</div>
+            <div class="detail-row">可通过 <a href="https://api.didatravel.com/pages/mergerateplaninfo.html" target="_blank" style="color:var(--accent);">MergeRatePlanInfo API 文档</a> 将 MergeRatePlanID 解码回原始的 SupplierID、SupplierRatePlanID 等信息，方便排查合并前后的 RP 对应关系。</div>
+
+            <div class="sub-title green">Hotel 级别（查价阶段执行）</div>
+            <div class="detail-row">售卖房型 RP 服务套餐分组聚合 + 单酒店实时报价缓存。中间层先做 MergeRatePlanInfo 的组合和 MergeRatePlanID 的构建，然后再做 RP 聚合处理。</div>
+
+            <div class="sub-title orange">RatePlan 级别（验价阶段执行）</div>
+            <div class="detail-row">售卖房型 RP 服务套餐轮转 + 缓存报价价格替换。轮转与原始 RP 验价请求<strong>并行</strong>进行，最后比较两者价格，选择最优结果返回。</div>
+
+            <div class="sub-title purple">不支持 RP 合并的场景</div>
+            <div class="detail-table">
+              <thead><tr><th>场景</th><th>原因</th><th>相关配置</th></tr></thead>
+              <tbody>
+                <tr><td>SwitchClient</td><td>不走 RP 合并模式</td><td class="mono">Dida.Biz.SwitchConfig</td></tr>
+                <tr><td>ChannelID = DidaShopping</td><td>Shopping 前端多供应商并发，无法合并</td><td>—</td></tr>
+                <tr><td>验价时使用"询价代替"的机构</td><td>不走 RP 合并模式</td><td class="mono">DidaAPI.Config.RPToHotelSearchV2</td></tr>
+                <tr><td>渠道本地缓存单天报价构建连住</td><td>连住要求 RP 必须相同，合并后每天轮转出的大概率不是同一个 RP</td><td>—</td></tr>
+              </tbody>
+            </div>
+
+            <div class="sub-title">相关配置</div>
+            <div class="detail-table">
+              <thead><tr><th>配置 Key</th><th>说明</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">Channel.MergeRatePlanDidaHotel.Config</td><td>酒店级别 RP 合并配置（Dolphin）</td></tr>
+                <tr><td class="mono">RedisConnectionString.Channel.MergeRatePlanData</td><td>RP 合并缓存 Redis 连接串（Dolphin）</td></tr>
+              </tbody>
+            </div>
+
+            <div class="sub-title">已完成适配的渠道壳子</div>
+            <div class="detail-row">DidaApi、Agoda、SnapTravel、DerbySoft、飞猪国际（AliTrip）、美团国际（DiscoveryAviation）、去哪儿国际</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         Section ③ 逐条 RP 过滤
+         ════════════════════════════════════════ -->
+    <div class="section" id="sec-2">
+      <div class="section-title">③ 逐条 RP 过滤</div>
+      <div class="section-desc">对坑位合并后的每条 RP 逐一判断是否满足露出条件。不满足的被过滤掉，不进入后续环节。</div>
+
+      <!-- Filter overview table -->
+      <div class="detail-table" style="margin-bottom:16px;">
+        <thead><tr><th>过滤类型</th><th>说明</th><th>配置项</th></tr></thead>
+        <tbody>
+          <tr><td>国籍限制</td><td>RP 的售卖国籍与 Hack 后的国籍不匹配</td><td class="mono">SubClientID</td></tr>
+          <tr><td>到店付服务费（ExcludedFee）</td><td>含到店付服务费的报价会被过滤掉 ⚠️ 待确认：哪些供应商/机构</td><td class="mono">DidaHotelMandatoryFeesConfig</td></tr>
+          <tr><td>不可取消 RP 过滤</td><td>按入住前/下单后时间条件过滤不可取消 RP</td><td class="mono">NonRefundFilterV2</td></tr>
+          <tr><td>入住人数过滤</td><td>过滤餐型/人数不一致的报价</td><td class="mono">OccupancyFilterConfig</td></tr>
+          <tr><td>低余额降级</td><td>供应商余额不足时切换为缓存报价</td><td class="mono">LowBalanceSwitchToCacheClientScopes</td></tr>
+        </tbody>
+      </div>
+
+      <div class="config-list">
+
+        <!-- NonRefundFilterV2 -->
+        <div class="config-item">
+          <div class="config-item-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="left">
+              <span class="config-key-tag">NonRefundFilterV2</span>
+              <span class="config-brief">不可取消 RP 过滤（最后一道关卡）</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-item-body">
+            <div class="detail-row"><strong>作用：</strong>控制不可取消 RP 的露出条件，是报价输出的最后一道关卡。</div>
+            <div class="detail-row"><strong>JSON 结构：</strong></div>
+            <div class="json-block">{
+  "BroadwayTravelB2C": {},           // 空对象 = 过滤全部不可取消 RP
+  "JTAtravelB2B": {
+    "MaxBeforeCheckInHours": 72      // 入住前 72h 内不可免费取消 → 移除
+  },
+  "config_demo": {
+    "MinAfterBookingHours": 3,       // 下单后 3h 内不可免费取消 → 移除
+    "MaxBeforeCheckInHours": 24      // 入住前 24h 内不可免费取消 → 移除
+  }
+}</div>
+            <div class="detail-table" style="margin-top:10px;">
+              <thead><tr><th>配置值</th><th>含义</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">{}</td><td>过滤全部不可取消 RP（包括复制出的 -N RP），只出可取消的</td></tr>
+                <tr><td class="mono">MaxBeforeCheckInHours: 72</td><td>入住前 72h 内不可免费取消的 RP → 移除</td></tr>
+                <tr><td class="mono">MinAfterBookingHours: 3</td><td>下单后 3h 内不可免费取消的 RP → 移除</td></tr>
+              </tbody>
+            </div>
+            <div class="detail-row" style="margin-top:8px;"><strong>判断逻辑（MaxBeforeCheckInHours）：</strong></div>
+            <div class="formula-box">if (CheckinTime - 免费取消截止时间) < 配置小时数:
+    → 报价过滤掉
+else:
+    → 报价正常出</div>
+            <div class="note-box warn"><strong>或关系：</strong>MaxBeforeCheckInHours 和 MinAfterBookingHours 为<strong>或</strong>关系，满足<strong>任一</strong>条件即移除对应 RP（不是同时满足才移除）。</div>
+
+            <div class="sub-title green">执行时机（知识库已确认）</div>
+            <div class="flow-steps">
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">1</div><div class="fs-text">RP 合并 → RP 过滤 → 复制不可取消 RP → <strong>不可取消过滤</strong>（最后一道关卡）</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">2</div><div class="fs-text">不可取消过滤会对<strong>已完成合并、过滤和复制</strong>的全部 RP 进行过滤</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">3</div><div class="fs-text">配置为 <code style="font-family:monospace;font-size:11.5px">{}</code>（空对象）→ 所有不可取消 RP（包括复制出的 <code style="font-family:monospace;font-size:11.5px">-N</code> RP）全部被过滤，仅输出可取消 RP</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OccupancyFilterConfig -->
+        <div class="config-item">
+          <div class="config-item-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="left">
+              <span class="config-key-tag">OccupancyFilterConfig</span>
+              <span class="config-brief">入住人数过滤</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-item-body">
+            <div class="detail-row"><strong>作用：</strong>过滤餐型/人数不一致的报价。按「床型筛选」和「餐食筛选」两步判断。</div>
+            <div class="sub-title">床型筛选</div>
+            <div class="detail-row">系统计算实际入住人数（成人 + 可能包含的儿童），与每种床型的默认可入住人数对比，可入住人数 < 实际入住人数 → 该 RP 排除。</div>
+            <div class="sub-title orange">餐食筛选</div>
+            <div class="detail-row">系统比较套餐内早餐份数（MealAmount）与实际入住人数：
+              <ul style="margin-top:4px;padding-left:18px;">
+                <li>餐数 < 实际入住人数 → 排除</li>
+                <li>"不含餐"不做检查直接保留</li>
+                <li>餐数信息缺失 → 排除（不确定能否满足需求）</li>
+              </ul>
+            </div>
+            <div class="sub-title purple">儿童是否计入人数</div>
+            <div class="detail-row">由配置项 <span class="mono">MealType</span>（餐型）和 <span class="mono">BedType</span>（床型）控制：<strong>0 = 不含儿童，1 = 含儿童</strong>。</div>
+          </div>
+        </div>
+
+        <!-- LowBalanceSwitchToCache -->
+        <div class="config-item">
+          <div class="config-item-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="left">
+              <span class="config-key-tag">LowBalanceSwitchToCacheClientScopes</span>
+              <span class="config-brief">低余额降级切缓存</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-item-body">
+            <div class="detail-row"><strong>作用：</strong>供应商余额不足时切换为缓存报价，降低实时请求量，避免因余额不足导致查价失败。</div>
+            <div class="detail-row"><strong>配置字段：</strong><span class="mono">SwitchCacheBalanceBaseLineCNY</span>（人民币阈值，默认 500）+ <span class="mono">ClientIDList</span>（机构名单）</div>
+            <div class="sub-title green">执行逻辑</div>
+            <div class="flow-steps">
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--orange)">1</div><div class="fs-text">后台 Job 持续监控名单内机构的财务账号余额</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--orange)">2</div><div class="fs-text">余额 < 阈值 → 多酒店/单酒店实时查询自动切换为缓存查询</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">3</div><div class="fs-text">余额恢复至阈值以上 → <strong>恢复为原先的查询方式</strong>（实时就实时，缓存就缓存，不主动覆盖）</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         Section ④ 输出策略
+         ════════════════════════════════════════ -->
+    <div class="section" id="sec-3">
+      <div class="section-title">④ 输出策略</div>
+      <div class="section-desc">RP 经过以上环节后，最终输出前的最后处理：坑位报价数量控制、最优取消政策、复制不可取消 RP 等。</div>
+
+      <div class="config-list">
+
+        <!-- 4.1 RP 合并（引用） -->
+        <div class="config-item">
+          <div class="config-item-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="left">
+              <span class="config-key-tag">4.1 RP 合并 / 轮转</span>
+              <span class="config-brief">详见 section ② 坑位合并</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-item-body">
+            <div class="detail-row">RP 合并/轮转逻辑详见 section 。此处不再重复。</div>
+          </div>
+        </div>
+
+        <!-- 4.1.5 TopCount 最优取消政策 -->
+        <div class="config-item">
+          <div class="config-item-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="left">
+              <span class="config-key-tag">TopCountForBreakfastCancellation</span>
+              <span class="config-brief">坑位报价数量 + 最优取消政策</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-item-body">
+            <div class="detail-row"><strong>目的：</strong>按「餐型 + 取消政策」坑位控制报价输出数量，2.0 额外输出「最优取消政策」报价，满足 B2C 用户对"临近入住仍可退"的高溢价需求。</div>
+
+            <div class="note-box warn"><strong>与 RP 合并互斥：</strong>一旦机构开了 RP 合并，此配置完全不生效。要用最优取消政策，必须主动删除 RP 合并的配置。原因：RP 合并每组只留 1 条（价格最低），无法额外输出"价格更高但取消政策更好"的报价。</div>
+
+            <div class="sub-title">配置格式演变</div>
+            <div class="detail-table">
+              <thead><tr><th>版本</th><th>格式</th><th>含义</th></tr></thead>
+              <tbody>
+                <tr><td>1.0（老配置）</td><td class="mono">"1,1"</td><td>第 1 位：聚合房型；第 2 位：未聚合 RP。每坑位各出 N 条最低价</td></tr>
+                <tr><td>2.0（新配置）</td><td class="mono">"1,1,1,1"</td><td>第 1、2 位同上；第 3 位：聚合房型额外加最优取消政策；第 4 位：未聚合 RP 额外加最优取消政策</td></tr>
+              </tbody>
+            </div>
+
+            <div class="sub-title orange">Wolf V2 迁移后（每个位置拆成独立字段）</div>
+            <div class="detail-table">
+              <thead><tr><th>老配置位置</th><th>Wolf V2 Key</th><th>含义</th></tr></thead>
+              <tbody>
+                <tr><td>第 1 位</td><td class="mono" style="font-size:10px">MappedRoomTypeTopCountForBreakfastCancellation</td><td>已匹配房型，按「餐型 × 取消政策」4 坑位各出 N 条最低价</td></tr>
+                <tr><td>第 2 位</td><td class="mono" style="font-size:10px">UnmappedRoomTypeTopCountForBreakfastCancellation</td><td>未匹配房型，同上</td></tr>
+                <tr><td>第 3 位</td><td class="mono" style="font-size:10px">MappedRoomTypeTopCountForOptimalCancellationBreakfast</td><td>已匹配房型，额外按最优取消政策（取消截止日期最晚优先）再取 N 条</td></tr>
+                <tr><td>第 4 位</td><td class="mono" style="font-size:10px">UnmappedRoomTypeTopCountForOptimalCancellationBreakfast</td><td>未匹配房型，同上</td></tr>
+              </tbody>
+            </div>
+            <div class="note-box warn" style="margin-top:8px;">⚠️ <strong>待确认：</strong>Wolf V1 和 Wolf V2 的配置是否同时生效，还是只取其一，需找开发确认。</div>
+
+            <div class="sub-title">4 个基础坑位组合</div>
+            <div class="detail-table">
+              <thead><tr><th>组合</th><th>Dida 聚合房型</th><th>Dida 未聚合房型</th></tr></thead>
+              <tbody>
+                <tr><td>含早 + 不可取消</td><td>N</td><td>N</td></tr>
+                <tr><td>不含早 + 不可取消</td><td>N</td><td>N</td></tr>
+                <tr><td>含早 + 可取消</td><td>N</td><td>N</td></tr>
+                <tr><td>不含早 + 可取消</td><td>N</td><td>N</td></tr>
+              </tbody>
+            </div>
+
+            <div class="sub-title purple">示例（下单 2026-1-16，入住 2026-2-16）</div>
+            <div class="detail-table">
+              <thead><tr><th>组合</th><th>最近免费取消时间</th><th>老配置</th><th>新配置</th></tr></thead>
+              <tbody>
+                <tr><td>含早+不可取消</td><td>2026-01-17</td><td>出（¥100）</td><td>出</td></tr>
+                <tr><td>不含早+不可取消</td><td>—</td><td>出（¥152）</td><td>出</td></tr>
+                <tr><td>含早+可取消+最低价</td><td>2026-01-17</td><td>出（¥147）</td><td>出</td></tr>
+                <tr><td>不含早+可取消+最低价</td><td>2026-02-09</td><td>出（¥167）</td><td>出</td></tr>
+                <tr><td style="font-weight:600">含早+可取消+最优取消政策</td><td style="font-weight:600">2026-02-15</td><td>—</td><td style="font-weight:600;color:var(--green)">出（¥170，新增）</td></tr>
+                <tr><td style="font-weight:600">不含早+可取消+最优取消政策</td><td style="font-weight:600">2026-02-15</td><td>—</td><td style="font-weight:600;color:var(--green)">出（¥200，新增）</td></tr>
+              </tbody>
+            </div>
+            <div class="note-box"><strong>Dida 对"可取消"的定义：</strong>下单那一刻可取消，就算可取消。</div>
+          </div>
+        </div>
+
+        <!-- 4.2 带入离时间 -->
+        <div class="config-item">
+          <div class="config-item-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="left">
+              <span class="config-key-tag">带入离时间报价输出</span>
+              <span class="config-brief">供应商入离时间报价处理</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-item-body">
+            <div class="detail-row"><strong>逻辑：</strong>部分供应商输出带有入离时间的报价（价格更便宜），RP 层面正常输出，同时额外携带入离时间信息。通过供应商组写入内容组 supplier 表，内容组执行匹配逻辑后写入 RPView 缓存。</div>
+            <div class="detail-row"><strong>当前支持的供应商：</strong>Yanolja、GCcompany</div>
+            <div class="detail-row"><strong>已开放渠道：</strong>Agoda</div>
+          </div>
+        </div>
+
+        <!-- 4.3 携程多人报价 -->
+        <div class="config-item">
+          <div class="config-item-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="left">
+              <span class="config-key-tag">携程渠道多人报价</span>
+              <span class="config-brief">人数字段处理逻辑（NewAPI only）</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-item-body">
+            <div class="detail-row"><strong>逻辑：</strong>仅针对融合接口 NewAPI 生效（COTA 等老接口不做功能迭代）。将携程请求传入的人数 mock 为 null，系统统一返回所有入住人数场景下的报价。同时支持最大入住人数限制配置，控制返回的报价不超过指定人数。</div>
+            <div class="note-box">注：此功能后续会拓展至中间层，从 CRS 缓存取值。</div>
+          </div>
+        </div>
+
+        <!-- 4.4 复制可取消RP为不可取消 -->
+        <div class="config-item">
+          <div class="config-item-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="left">
+              <span class="config-key-tag">DuplicateRefundableAsNonRefundable</span>
+              <span class="config-brief">复制可取消 RP 为不可取消</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-item-body">
+            <div class="detail-row"><strong>目的：</strong>将原本可取消的 RP 复制一份，标记为不可取消，一并输出给渠道，增加渠道的报价选择。</div>
+            <div class="sub-title green">逻辑</div>
+            <div class="flow-steps">
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">1</div><div class="fs-text">仅在<strong>单酒店实时查价</strong>中生效（酒店级别）</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">2</div><div class="fs-text">将可取消的 RP 复制一份，标记为不可取消（<span class="mono">IsForceAsNonRefund = True</span>）</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">3</div><div class="fs-text">复制后的 RP ID 格式：<strong>原RPID + "-N"</strong>（如 <span class="mono">123456-N</span>）</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">4</div><div class="fs-text">复制生成的 RP <strong>不参与后续 RP 合并</strong>，作为独立 RP 单独输出</div></div>
+            </div>
+            <div class="sub-title orange">与 RP 合并的关系</div>
+            <div class="detail-row">复制出的不可取消 RP 因 <span class="mono">IsForceAsNonRefund</span> 字段值与原 RP 不同，在 RP 合并时天然分属不同组，不会被合并到一起。</div>
+            <div class="sub-title purple">执行顺序（知识库已确认）</div>
+            <div class="formula-box">RP 合并 → RP 过滤 → 复制不可取消 RP → 不可取消过滤（最后一道关卡）</div>
+            <div class="note-box">复制出的不可取消 RP（<span class="mono">IsForceAsNonRefund=True</span>，RPID 后缀 <span class="mono">-N</span>）不参与 RP 合并（因为 <span class="mono">IsForceAsNonRefund</span> 字段值不同，天然分属不同组），作为独立 RP 单独输出。</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         Section ⑤ 返回渠道
+         ════════════════════════════════════════ -->
+    <div class="section" id="sec-4">
+      <div class="section-title">⑤ 返回渠道报价</div>
+      <div class="section-desc">RP 经过以上所有环节后返回给渠道。验价阶段遵循相同模式，差异在于多了查价缓存对比。</div>
+
+      <div class="config-list">
+
+        <div class="config-item">
+          <div class="config-item-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="left">
+              <span class="config-key-tag">报价全链路</span>
+              <span class="config-brief">渠道请求进入 → 返回渠道报价</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-item-body">
+            <div class="flow-steps">
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--accent)">①</div><div class="fs-text"><strong>国籍处理</strong> — 决定用什么国籍去查供应商（Nationality Hack / Restriction Free）</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--text-muted)"></div><div class="fs-text">拿到供应商原始报价（SS 返回）</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">②</div><div class="fs-text"><strong>坑位合并</strong> — 按房型+床型+餐型+能否取消分组聚合，去除重复报价</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--orange)">③</div><div class="fs-text"><strong>逐条 RP 过滤</strong> — 国籍限制 / 到店付服务费 / 不可取消过滤 / 入住人数过滤 / 低余额降级…</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--purple)">④</div><div class="fs-text"><strong>输出策略</strong> — RP 合并 / 坑位报价数量控制 / 最优取消政策 / 复制不可取消 RP / 带入离时间</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--teal)">⑤</div><div class="fs-text"><strong>返回渠道报价</strong></div></div>
+            </div>
+            <div class="note-box">验价阶段同理：请求进入 → 缓存对比 → 返回结果</div>
+          </div>
+        </div>
+
+        <div class="config-item">
+          <div class="config-item-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="left">
+              <span class="config-key-tag">数据存储</span>
+              <span class="config-brief">渠道侧报价准确率存储</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-item-body">
+            <div class="detail-table">
+              <thead><tr><th>数据</th><th>存储位置</th></tr></thead>
+              <tbody>
+                <tr><td>渠道准确率</td><td class="mono">didadata.rateaccuracy.rate_accuracy_channel</td></tr>
+                <tr><td>供应商准确率</td><td class="mono">didadata.rateaccuracy.rate_accuracy_supplier</td></tr>
+              </tbody>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+  function showSection(index) {
+    document.querySelectorAll('.pipe-step').forEach((s, i) => s.classList.toggle('active', i === index));
+    document.querySelectorAll('.section').forEach((s, i) => s.classList.toggle('active', i === index));
+  }
+</script>
+
+</body>
+</html>
