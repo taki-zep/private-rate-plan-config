@@ -363,9 +363,8 @@
             </div>
             <div class="note-box">满足以上三点 → 自动标记国籍为 CN + 标记忽略国籍（后续不过滤 RP 的国籍限制）</div>
             <div class="detail-row"><strong>如何关闭：</strong>设 <code style="font-family:monospace;font-size:11.5px">"NationalitySubChannelID": {}</code> 即可。</div>
-          </div>
-        
-            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dida.Biz.Rate.SubClientID" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dida.Biz.Rate.SubClientID</a></div></div>
+          
+            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dida.Biz.Rate.SubClientID" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dida.Biz.Rate.SubClientID</a></div></div></div>
 
         <!-- NationalityHackUnified -->
         <div class="config-item">
@@ -420,7 +419,8 @@
                 <tr><td>两位国籍码（如 <code style="font-family:monospace;font-size:11.5px">KR</code>）</td><td>强制指定该国籍</td></tr>
               </tbody>
             </div>
-            <div class="detail-row">可选 <span class="mono">DidaHotelCountryMap</span>：先按国家映射表匹配，命中则直接返回映射后的国籍；未命中再走 ClientActionStrategy。</div>
+            <div class="detail-row">可选 <span class="mono">DidaHotelCountryMap</span>：先按国家映射表匹配，命中则直接返回映射后的国籍；未命中再走 ClientActionStrategy。
+            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dida.Biz.Rate.NationalityHackUnified" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dida.Biz.Rate.NationalityHackUnified</a></div></div>
 
             <div class="sub-title orange">IgnoreHackRules（跳过国籍 Hack 白名单）</div>
             <div class="detail-row">配置哪些订单流程跳过 Hack；以及人工补单流程中哪些供应商<strong>必须</strong>走 Hack。</div>
@@ -556,7 +556,8 @@
             <div class="sub-title">已完成适配的渠道壳子</div>
             <div class="detail-row">DidaApi、Agoda、SnapTravel、DerbySoft、飞猪国际（AliTrip）、美团国际（DiscoveryAviation）、去哪儿国际</div>
           </div>
-        </div>
+        
+            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.MergeRatePlan.Config" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.MergeRatePlan.Config</a></div></div>
       </div>
     </div>
 
@@ -576,11 +577,7 @@
           <tr><td>不可取消 RP 过滤</td><td>按入住前/下单后时间条件过滤不可取消 RP</td><td class="mono">NonRefundFilterV2</td></tr>
           <tr><td>入住人数过滤</td><td>过滤餐型/人数不一致的报价</td><td class="mono">OccupancyFilterConfig</td></tr>
           <tr><td>低余额降级</td><td>供应商余额不足时切换为缓存报价</td><td class="mono">LowBalanceSwitchToCacheClientScopes</td></tr>
-        </tbody>
-      
-            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dida.Biz.Rate.NationalityHackUnified" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dida.Biz.Rate.NationalityHackUnified</a></div>
-            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.MergeRatePlan.Config" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.MergeRatePlan.Config</a></div>
-            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.Rate.LowBalanceSwitchToCacheClientScopes" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.Rate.LowBalanceSwitchToCacheClientScopes</a></div></div>
+        </tbody></div>
 
       <div class="config-list">
 
@@ -625,11 +622,10 @@ else:
             <div class="flow-steps">
               <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">1</div><div class="fs-text">RP 合并 → RP 过滤 → 复制不可取消 RP → <strong>不可取消过滤</strong>（最后一道关卡）</div></div>
               <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">2</div><div class="fs-text">不可取消过滤会对<strong>已完成合并、过滤和复制</strong>的全部 RP 进行过滤</div></div>
-              <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">3</div><div class="fs-text">配置为 <code style="font-family:monospace;font-size:11.5px">{}</code>（空对象）→ 所有不可取消 RP（包括复制出的 <code style="font-family:monospace;font-size:11.5px">-N</code> RP）全部被过滤，仅输出可取消 RP</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">3</div><div class="fs-text">配置为 <code style="font-family:monospace;font-size:11.5px">{}</code>（空对象）→ 所有不可取消 RP（包括复制出的 <code style="font-family:monospace;font-size:11.5px">-N</code> RP）全部被过滤，仅输出可取消 RP
+            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/DidaAPI.Config.NonRefundFilterV2" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/DidaAPI.Config.NonRefundFilterV2</a></div></div></div>
             </div>
-          </div>
-        
-            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/DidaAPI.Config.NonRefundFilterV2" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/DidaAPI.Config.NonRefundFilterV2</a></div></div>
+          </div></div>
 
         <!-- OccupancyFilterConfig -->
         <div class="config-item">
@@ -654,9 +650,8 @@ else:
             </div>
             <div class="sub-title purple">儿童是否计入人数</div>
             <div class="detail-row">由配置项 <span class="mono">MealType</span>（餐型）和 <span class="mono">BedType</span>（床型）控制：<strong>0 = 不含儿童，1 = 含儿童</strong>。</div>
-          </div>
-        
-            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dia.Biz.Rate.OccupancyFilterConfig" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dia.Biz.Rate.OccupancyFilterConfig</a></div></div>
+          
+            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dia.Biz.Rate.OccupancyFilterConfig" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dia.Biz.Rate.OccupancyFilterConfig</a></div></div></div>
 
         <!-- LowBalanceSwitchToCache -->
         <div class="config-item">
@@ -676,6 +671,7 @@ else:
               <div class="flow-step-row"><div class="fs-num" style="background:var(--orange)">2</div><div class="fs-text">余额 < 阈值 → 多酒店/单酒店实时查询自动切换为缓存查询</div></div>
               <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">3</div><div class="fs-text">余额恢复至阈值以上 → <strong>恢复为原先的查询方式</strong>（实时就实时，缓存就缓存，不主动覆盖）</div></div>
             </div>
+            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.Rate.LowBalanceSwitchToCacheClientScopes" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.Rate.LowBalanceSwitchToCacheClientScopes</a></div>
           </div>
         </div>
 
@@ -764,9 +760,8 @@ else:
               </tbody>
             </div>
             <div class="note-box"><strong>Dida 对"可取消"的定义：</strong>下单那一刻可取消，就算可取消。</div>
-          </div>
-        
-            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/DidaAPI.Config.TopCountForBreakfastCancellation" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/DidaAPI.Config.TopCountForBreakfastCancellation</a></div></div>
+          
+            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/DidaAPI.Config.TopCountForBreakfastCancellation" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/DidaAPI.Config.TopCountForBreakfastCancellation</a></div></div></div>
 
         <!-- 4.2 带入离时间 -->
         <div class="config-item">
@@ -823,7 +818,8 @@ else:
             <div class="formula-box">RP 合并 → RP 过滤 → 复制不可取消 RP → 不可取消过滤（最后一道关卡）</div>
             <div class="note-box">复制出的不可取消 RP（<span class="mono">IsForceAsNonRefund=True</span>，RPID 后缀 <span class="mono">-N</span>）不参与 RP 合并（因为 <span class="mono">IsForceAsNonRefund</span> 字段值不同，天然分属不同组），作为独立 RP 单独输出。</div>
           </div>
-        </div>
+        
+            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.DuplicateRefundableAsNonRefundable" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.DuplicateRefundableAsNonRefundable</a></div></div>
 
       </div>
     </div>
@@ -833,8 +829,7 @@ else:
          ════════════════════════════════════════ -->
     <div class="section" id="sec-4">
       <div class="section-title">⑤ 返回渠道报价</div>
-      <div class="section-desc">RP 经过以上所有环节后返回给渠道。验价阶段遵循相同模式，差异在于多了查价缓存对比。
-            <div class="detail-row" style="margin-top:12px;"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.DuplicateRefundableAsNonRefundable" target="_blank" style="color:var(--accent);text-decoration:none;">https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.DuplicateRefundableAsNonRefundable</a></div></div>
+      <div class="section-desc">RP 经过以上所有环节后返回给渠道。验价阶段遵循相同模式，差异在于多了查价缓存对比。</div>
 
       <div class="config-list">
 
