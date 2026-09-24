@@ -851,8 +851,6 @@ else → 正常输出</div>
         pop.style.top = (rect.bottom + 6) + 'px';
         pop.style.left = Math.min(rect.left, window.innerWidth - 640) + 'px';
       }
-      icon.addEventListener('mouseenter', function() { positionTooltip(); pop.classList.add('show'); });
-      icon.addEventListener('mouseleave', function() { pop.classList.remove('show'); });
       icon.addEventListener('click', function(e) {
         e.stopPropagation();
         positionTooltip();
