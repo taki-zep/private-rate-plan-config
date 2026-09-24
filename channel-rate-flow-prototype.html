@@ -140,6 +140,14 @@
   .overview-table td { color: var(--text-secondary); }
 
   @media (max-width: 900px) { .sidebar { display: none; } }
+
+  /* Glossary page — flat FAQ style */
+  .glossary-list { display: flex; flex-direction: column; gap: 12px; }
+  .glossary-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+  .glossary-key { font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; font-weight: 600; color: var(--accent); display: inline; }
+  .glossary-sub { display: inline; font-size: 13px; color: var(--text-secondary); margin-left: 8px; }
+  .glossary-desc { margin-top: 10px; font-size: 13px; line-height: 1.6; color: var(--text-secondary); }
+  .glossary-desc strong { color: var(--text-primary); }
 </style>
 </head>
 <body>
@@ -822,120 +830,60 @@ else → 正常输出</div>
       <div class="section-title">术语速查</div>
       <div class="section-desc" style="margin-bottom:16px;">报价全链路涉及的核心概念，按出场顺序排列。</div>
 
-      <div class="config-list">
+      <div class="glossary-list">
 
-        <div class="config-item open">
-          <div class="config-header" onclick="this.parentElement.classList.toggle('open')">
-            <div class="left">
-              <span class="config-key-tag">ARI</span>
-              <span class="config-brief">Availability / Rates / Inventory</span>
-            </div>
-            <span class="config-toggle">▼</span>
-          </div>
-          <div class="config-summary">
-            <div class="summary-desc"><strong>批量询价场景。</strong>用户在酒店列表页选择日期、人数后，系统对多个酒店同时发起查价请求。返回的是酒店级别的汇总数据（最低价、房型数量等），用于列表展示。</div>
-            <div class="summary-badges"><span class="badge badge-blue">酒店级别</span><span class="badge badge-green">批量请求</span></div>
-          </div>
+        <div class="glossary-card">
+          <div class="glossary-key">ARI</div>
+          <div class="glossary-sub">Availability / Rates / Inventory</div>
+          <div class="glossary-desc"><strong>批量询价场景。</strong>用户在酒店列表页选择日期、人数后，系统对多个酒店同时发起查价请求。返回的是酒店级别的汇总数据（最低价、房型数量等），用于列表展示。</div>
+          <div class="summary-badges"><span class="badge badge-blue">酒店级别</span><span class="badge badge-green">批量请求</span></div>
         </div>
 
-        <div class="config-item">
-          <div class="config-header" onclick="this.parentElement.classList.toggle('open')">
-            <div class="left">
-              <span class="config-key-tag">Rate</span>
-              <span class="config-brief">单酒店精确查价 / 验价</span>
-            </div>
-            <span class="config-toggle">▼</span>
-          </div>
-          <div class="config-summary">
-            <div class="summary-desc"><strong>单酒店详情页场景。</strong>用户点击某个酒店后，系统对该酒店发起精确查价，返回每个 RP 的详细信息（价格、取消政策、餐型等）。验价也是 Rate 场景，用于确认价格有效性。</div>
-            <div class="summary-badges"><span class="badge badge-blue">RP 级别</span><span class="badge badge-green">精确请求</span></div>
-            <div class="note-box"><strong>ARI vs Rate 的区别：</strong>ARI 管"有哪些酒店、最低价多少"；Rate 管"这个 RP 具体多少钱、什么条件"。很多配置只作用于 Rate 场景，因为 ARI 阶段信息还不够细。</div>
-          </div>
+        <div class="glossary-card">
+          <div class="glossary-key">Rate</div>
+          <div class="glossary-sub">单酒店精确查价 / 验价</div>
+          <div class="glossary-desc"><strong>单酒店详情页场景。</strong>用户点击某个酒店后，系统对该酒店发起精确查价，返回每个 RP 的详细信息（价格、取消政策、餐型等）。验价也是 Rate 场景，用于确认价格有效性。</div>
+          <div class="summary-badges"><span class="badge badge-blue">RP 级别</span><span class="badge badge-green">精确请求</span></div>
+          <div class="note-box"><strong>ARI vs Rate 的区别：</strong>ARI 管"有哪些酒店、最低价多少"；Rate 管"这个 RP 具体多少钱、什么条件"。很多配置只作用于 Rate 场景，因为 ARI 阶段信息还不够细。</div>
         </div>
 
-        <div class="config-item">
-          <div class="config-header" onclick="this.parentElement.classList.toggle('open')">
-            <div class="left">
-              <span class="config-key-tag">RP (RatePlan)</span>
-              <span class="config-brief">报价方案</span>
-            </div>
-            <span class="config-toggle">▼</span>
-          </div>
-          <div class="config-summary">
-            <div class="summary-desc">供应商返回的一个<strong>可售房型报价</strong>，包含：房型 ID、床型、餐型、价格、取消政策、入住限制等。一个酒店可以有多个 RP（如含早可退、不含早不可退等）。</div>
-            <div class="summary-badges"><span class="badge badge-blue">最小报价单元</span></div>
-            <div class="detail-row"><strong>RPID：</strong>每个 RP 的唯一标识。合并后生成 MergeRatePlanID（Base62 编码），格式如 <span class="mono">4il47aNbtmi-cgestWE0GcT</span>。</div>
-          </div>
+        <div class="glossary-card">
+          <div class="glossary-key">RP (RatePlan)</div>
+          <div class="glossary-sub">报价方案</div>
+          <div class="glossary-desc">供应商返回的一个<strong>可售房型报价</strong>，包含：房型 ID、床型、餐型、价格、取消政策、入住限制等。一个酒店可以有多个 RP（如含早可退、不含早不可退等）。</div>
+          <div class="summary-badges"><span class="badge badge-blue">最小报价单元</span></div>
+          <div class="detail-row"><strong>RPID：</strong>每个 RP 的唯一标识。合并后生成 MergeRatePlanID（Base62 编码），格式如 <span class="mono">4il47aNbtmi-cgestWE0GcT</span>。</div>
         </div>
 
-        <div class="config-item">
-          <div class="config-header" onclick="this.parentElement.classList.toggle('open')">
-            <div class="left">
-              <span class="config-key-tag">坑位</span>
-              <span class="config-brief">房型+床型+餐型+取消政策的组合维度</span>
-            </div>
-            <span class="config-toggle">▼</span>
+        <div class="glossary-card">
+          <div class="glossary-key">坑位</div>
+          <div class="glossary-sub">房型+床型+餐型+取消政策的组合维度</div>
+          <div class="glossary-desc">RP 合并时用来分组的维度组合。同一坑位内的多个 RP 只保留一条（最低价），不同坑位的 RP 互不影响。</div>
+          <div class="detail-table">
+            <thead><tr><th>维度</th><th>示例</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">RoomTypeID</td><td>大床房、双床房</td></tr>
+              <tr><td class="mono">BedTypeID</td><td>大床、双床、三床</td></tr>
+              <tr><td class="mono">MealTypeID + MealAmount</td><td>含早×2、不含早</td></tr>
+              <tr><td class="mono">IsNonRefundable</td><td>可取消、不可取消</td></tr>
+            </tbody>
           </div>
-          <div class="config-summary">
-            <div class="summary-desc">RP 合并时用来分组的维度组合。同一坑位内的多个 RP 只保留一条（最低价），不同坑位的 RP 互不影响。</div>
-            <div class="detail-table">
-              <thead><tr><th>维度</th><th>示例</th></tr></thead>
-              <tbody>
-                <tr><td class="mono">RoomTypeID</td><td>大床房、双床房</td></tr>
-                <tr><td class="mono">BedTypeID</td><td>大床、双床、三床</td></tr>
-                <tr><td class="mono">MealTypeID + MealAmount</td><td>含早×2、不含早</td></tr>
-                <tr><td class="mono">IsNonRefundable</td><td>可取消、不可取消</td></tr>
-              </tbody>
-            </div>
-            <div class="note-box">坑位合并后，同一坑位只出一条报价。TopCount 控制每个坑位出几条，最优取消政策额外再出一条。</div>
-          </div>
+          <div class="note-box">坑位合并后，同一坑位只出一条报价。TopCount 控制每个坑位出几条，最优取消政策额外再出一条。</div>
         </div>
 
-        <div class="config-item">
-          <div class="config-header" onclick="this.parentElement.classList.toggle('open')">
-            <div class="left">
-              <span class="config-key-tag">ClientID</span>
-              <span class="config-brief">机构 / 渠道标识</span>
-            </div>
-            <span class="config-toggle">▼</span>
-          </div>
-          <div class="config-summary">
-            <div class="summary-desc">每个接入 Dida 的渠道/机构有唯一 ID，如 <span class="mono">DidaOpaq</span>、<span class="mono">AgodaUK</span>、<span class="mono">A__map</span>。大部分配置按 ClientID 维度生效，不同机构可以有不同配置。</div>
-            <div class="summary-badges"><span class="badge badge-blue">配置维度</span><span class="badge badge-green">机构隔离</span></div>
-          </div>
+        <div class="glossary-card">
+          <div class="glossary-key">ClientID</div>
+          <div class="glossary-sub">机构 / 渠道标识</div>
+          <div class="glossary-desc">每个接入 Dida 的渠道/机构有唯一 ID，如 <span class="mono">DidaOpaq</span>、<span class="mono">AgodaUK</span>、<span class="mono">A__map</span>。大部分配置按 ClientID 维度生效，不同机构可以有不同配置。</div>
+          <div class="summary-badges"><span class="badge badge-blue">配置维度</span><span class="badge badge-green">机构隔离</span></div>
         </div>
 
-        <div class="config-item">
-          <div class="config-header" onclick="this.parentElement.classList.toggle('open')">
-            <div class="left">
-              <span class="config-key-tag">Wolf / Dolphin</span>
-              <span class="config-brief">Dida 配置中心</span>
-            </div>
-            <span class="config-toggle">▼</span>
-          </div>
-          <div class="config-summary">
-            <div class="summary-desc"><strong>Wolf：</strong>机构级配置中心，按 ClientID + Key 存储。大部分业务配置在这里。<br><strong>Dolphin：</strong>全局配置中心，不按机构区分，存 Redis 连接串等全局参数。</div>
-            <div class="summary-badges"><span class="badge badge-blue">Wolf = 机构级</span><span class="badge badge-green">Dolphin = 全局</span></div>
-            <div class="detail-row" style="margin-top:8px;"><strong>Wolf V2 API：</strong>POST 到 <span class="mono">wolf-caller-api.didaadmin.com</span>，需要 clientIds 参数。<br><strong>Dolphin API：</strong>GET 到 <span class="mono">wolf-v3-api.didainternal.com:8081</span>，需要 Bearer Token。</div>
-          </div>
-        </div>
-
-        <div class="config-item">
-          <div class="config-header" onclick="this.parentElement.classList.toggle('open')">
-            <div class="left">
-              <span class="config-key-tag">国籍三件套</span>
-              <span class="config-brief">CheckNationalityClient → SubClientID → NationalityHackUnified</span>
-            </div>
-            <span class="config-toggle">▼</span>
-          </div>
-          <div class="config-summary">
-            <div class="flow-steps">
-              <div class="flow-step-row"><div class="fs-num" style="background:var(--red)">1</div><div class="fs-text"><strong>CheckNationalityClient</strong> — 是否强制检查国籍。开启则无国籍直接报错</div></div>
-              <div class="flow-step-row"><div class="fs-num" style="background:var(--orange)">2</div><div class="fs-text"><strong>SubClientID</strong> — 是否忽略国籍限制。满足条件时自动标记 CN + 跳过国籍过滤</div></div>
-              <div class="flow-step-row"><div class="fs-num" style="background:var(--accent)">3</div><div class="fs-text"><strong>NationalityHackUnified</strong> — 用什么国籍去查供应商。按优先级匹配，输出 NationalityOutput 和 HackLiability</div></div>
-            </div>
-            <div class="note-box warn"><strong>️ 待确认：</strong>三个配置之间的精确执行顺序尚无文档，需找开发确认。</div>
-          </div>
+        <div class="glossary-card">
+          <div class="glossary-key">Wolf / Dolphin</div>
+          <div class="glossary-sub">Dida 配置中心</div>
+          <div class="glossary-desc"><strong>Wolf：</strong>机构级配置中心，按 ClientID + Key 存储。大部分业务配置在这里。<br><strong>Dolphin：</strong>全局配置中心，不按机构区分，存 Redis 连接串等全局参数。</div>
+          <div class="summary-badges"><span class="badge badge-blue">Wolf = 机构级</span><span class="badge badge-green">Dolphin = 全局</span></div>
+          <div class="detail-row" style="margin-top:8px;"><strong>Wolf V2 API：</strong>POST 到 <span class="mono">wolf-caller-api.didaadmin.com</span>，需要 clientIds 参数。<br><strong>Dolphin API：</strong>GET 到 <span class="mono">wolf-v3-api.didainternal.com:8081</span>，需要 Bearer Token。</div>
         </div>
 
       </div>
