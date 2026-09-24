@@ -143,13 +143,16 @@
 
   @media (max-width: 900px) { .sidebar { display: none; } }
 
-  /* Glossary page — flat FAQ style */
-  .glossary-list { display: flex; flex-direction: column; gap: 12px; }
-  .glossary-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
-  .glossary-key { font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; font-weight: 600; color: var(--accent); display: inline; }
-  .glossary-sub { display: inline; font-size: 13px; color: var(--text-secondary); margin-left: 8px; }
-  .glossary-desc { margin-top: 10px; font-size: 13px; line-height: 1.6; color: var(--text-secondary); }
-  .glossary-desc strong { color: var(--text-primary); }
+  /* Term tooltip */
+  .term-wrap { position: relative; display: inline-flex; align-items: center; gap: 3px; }
+  .term-icon { cursor: pointer; font-size: 11px; color: rgba(255,255,255,0.6); width: 15px; height: 15px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.35); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; transition: all 0.15s; }
+  .term-icon:hover { background: rgba(255,255,255,0.2); color: #fff; }
+  .term-pop { display: none; position: absolute; top: calc(100% + 6px); left: 0; z-index: 100; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; min-width: 300px; max-width: 380px; font-size: 12px; color: var(--text-secondary); line-height: 1.6; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  .term-pop::before { content: ''; position: absolute; top: -6px; left: 14px; width: 10px; height: 10px; background: #fff; border-left: 1px solid var(--border); border-top: 1px solid var(--border); transform: rotate(45deg); }
+  .term-pop.show { display: block; }
+  .term-pop strong { color: var(--text-primary); }
+  .term-pop .tp-row { margin-bottom: 6px; }
+  .term-pop .tp-row:last-child { margin-bottom: 0; }
 </style>
 </head>
 <body>
@@ -157,8 +160,7 @@
 <aside class="sidebar">
   <div class="sidebar-logo">Dida<span>Admin</span></div>
   <nav class="sidebar-nav">
-    <div class="sidebar-nav-item active" id="nav-config" onclick="showPage('config')">RP 露出配置</div>
-    <div class="sidebar-nav-item" id="nav-glossary" onclick="showPage('glossary')">术语速查</div>
+    <div class="sidebar-nav-item active">RP 露出配置</div>
   </nav>
 </aside>
 
@@ -169,9 +171,6 @@
   </header>
 
   <div class="content">
-
-    <!-- ══ Config Page ═══ -->
-    <div id="page-config">
 
     <div class="pipeline-bar">
       <div class="pipe-step active" data-step="1" onclick="showSection(0)"><div class="pipe-dot">①</div><div class="pipe-label">国籍处理</div></div>
@@ -213,7 +212,7 @@
           <div class="config-summary">
             <div class="summary-desc">控制 ARI 和 Rate 场景下是否检查国籍限制。开启后请求无国籍直接报错，后续配置不执行。</div>
             <div class="summary-badges">
-              <span class="badge badge-red"><a href="javascript:void(0)" onclick="showPage('glossary')">ARI</a> + <a href="javascript:void(0)" onclick="showPage('glossary')">Rate</a></span>
+              <span class="badge badge-red"><span class="term-wrap">ARI<span class="term-icon" onclick="event.stopPropagation();this.nextElementSibling.classList.toggle('show')">?</span><span class="term-pop"><div class="tp-row"><strong>ARI</strong> — Availability / Rates / Inventory<br>酒店列表页批量询价，返回酒店级别汇总数据（最低价、房型数等）。</div><div class="tp-row"><strong>Rate</strong> — 单酒店详情页精确查价/验价，返回每个 RP 的详细信息（价格、取消政策、餐型等）。</div></span></span> + <span class="term-wrap">Rate<span class="term-icon" onclick="event.stopPropagation();this.nextElementSibling.classList.toggle('show')">?</span><span class="term-pop"><div class="tp-row"><strong>ARI</strong> — Availability / Rates / Inventory<br>酒店列表页批量询价，返回酒店级别汇总数据（最低价、房型数等）。</div><div class="tp-row"><strong>Rate</strong> — 单酒店详情页精确查价/验价，返回每个 RP 的详细信息（价格、取消政策、餐型等）。</div></span></span></span>
               <span class="badge badge-blue">DidaAPI ONLY</span>
               <span class="badge badge-green">默认：否</span>
             </div>
@@ -246,7 +245,7 @@
             <div class="summary-desc">为机构指定子渠道，控制查价时是否忽略国籍限制。应用于 <strong>ARI</strong> 和 <strong>Rate</strong> 两个场景。</div>
             <div class="summary-url"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dida.Biz.Rate.SubClientID" target="_blank">wolf.didaadmin.com/.../SubClientID</a></div>
             <div class="summary-badges">
-              <span class="badge badge-blue"><a href="javascript:void(0)" onclick="showPage('glossary')">ARI</a> + <a href="javascript:void(0)" onclick="showPage('glossary')">Rate</a></span>
+              <span class="badge badge-blue"><span class="term-wrap">ARI<span class="term-icon" onclick="event.stopPropagation();this.nextElementSibling.classList.toggle('show')">?</span><span class="term-pop"><div class="tp-row"><strong>ARI</strong> — Availability / Rates / Inventory<br>酒店列表页批量询价，返回酒店级别汇总数据（最低价、房型数等）。</div><div class="tp-row"><strong>Rate</strong> — 单酒店详情页精确查价/验价，返回每个 RP 的详细信息（价格、取消政策、餐型等）。</div></span></span> + <span class="term-wrap">Rate<span class="term-icon" onclick="event.stopPropagation();this.nextElementSibling.classList.toggle('show')">?</span><span class="term-pop"><div class="tp-row"><strong>ARI</strong> — Availability / Rates / Inventory<br>酒店列表页批量询价，返回酒店级别汇总数据（最低价、房型数等）。</div><div class="tp-row"><strong>Rate</strong> — 单酒店详情页精确查价/验价，返回每个 RP 的详细信息（价格、取消政策、餐型等）。</div></span></span></span>
               <span class="badge badge-orange">四档国籍控制</span>
             </div>
 
@@ -311,7 +310,7 @@
             <div class="summary-desc">当国籍被过滤时，决定最终用什么国籍去查供应商。按优先级从高到低依次匹配，<strong>命中即止</strong>。仅用于 <strong>Rate（查价/验价）</strong>。</div>
             <div class="summary-url"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dida.Biz.Rate.NationalityHackUnified" target="_blank">wolf.didaadmin.com/.../NationalityHackUnified</a></div>
             <div class="summary-badges">
-              <span class="badge badge-blue"><a href="javascript:void(0)" onclick="showPage('glossary')">Rate</a> only</span>
+              <span class="badge badge-blue"><span class="term-wrap">Rate<span class="term-icon" onclick="event.stopPropagation();this.nextElementSibling.classList.toggle('show')">?</span><span class="term-pop"><div class="tp-row"><strong>ARI</strong> — Availability / Rates / Inventory<br>酒店列表页批量询价，返回酒店级别汇总数据（最低价、房型数等）。</div><div class="tp-row"><strong>Rate</strong> — 单酒店详情页精确查价/验价，返回每个 RP 的详细信息（价格、取消政策、餐型等）。</div></span></span> only</span>
               <span class="badge badge-orange">三级优先级</span>
               <span class="badge badge-purple">含 HackLiability</span>
             </div>
@@ -825,72 +824,6 @@ else → 正常输出</div>
       </div>
     </div>
 
-    </div><!-- /page-config -->
-
-    <!-- ══ Glossary Page ═══ -->
-    <div id="page-glossary" style="display:none;">
-      <div class="section-title">术语速查</div>
-      <div class="section-desc" style="margin-bottom:16px;">报价全链路涉及的核心概念，按出场顺序排列。</div>
-
-      <div class="glossary-list">
-
-        <div class="glossary-card">
-          <div class="glossary-key">ARI</div>
-          <div class="glossary-sub">Availability / Rates / Inventory</div>
-          <div class="glossary-desc"><strong>批量询价场景。</strong>用户在酒店列表页选择日期、人数后，系统对多个酒店同时发起查价请求。返回的是酒店级别的汇总数据（最低价、房型数量等），用于列表展示。</div>
-          <div class="summary-badges"><span class="badge badge-blue">酒店级别</span><span class="badge badge-green">批量请求</span></div>
-        </div>
-
-        <div class="glossary-card">
-          <div class="glossary-key">Rate</div>
-          <div class="glossary-sub">单酒店精确查价 / 验价</div>
-          <div class="glossary-desc"><strong>单酒店详情页场景。</strong>用户点击某个酒店后，系统对该酒店发起精确查价，返回每个 RP 的详细信息（价格、取消政策、餐型等）。验价也是 Rate 场景，用于确认价格有效性。</div>
-          <div class="summary-badges"><span class="badge badge-blue">RP 级别</span><span class="badge badge-green">精确请求</span></div>
-          <div class="note-box"><strong>ARI vs Rate 的区别：</strong>ARI 管"有哪些酒店、最低价多少"；Rate 管"这个 RP 具体多少钱、什么条件"。很多配置只作用于 Rate 场景，因为 ARI 阶段信息还不够细。</div>
-        </div>
-
-        <div class="glossary-card">
-          <div class="glossary-key">RP (RatePlan)</div>
-          <div class="glossary-sub">报价方案</div>
-          <div class="glossary-desc">供应商返回的一个<strong>可售房型报价</strong>，包含：房型 ID、床型、餐型、价格、取消政策、入住限制等。一个酒店可以有多个 RP（如含早可退、不含早不可退等）。</div>
-          <div class="summary-badges"><span class="badge badge-blue">最小报价单元</span></div>
-          <div class="detail-row"><strong>RPID：</strong>每个 RP 的唯一标识。合并后生成 MergeRatePlanID（Base62 编码），格式如 <span class="mono">4il47aNbtmi-cgestWE0GcT</span>。</div>
-        </div>
-
-        <div class="glossary-card">
-          <div class="glossary-key">坑位</div>
-          <div class="glossary-sub">房型+床型+餐型+取消政策的组合维度</div>
-          <div class="glossary-desc">RP 合并时用来分组的维度组合。同一坑位内的多个 RP 只保留一条（最低价），不同坑位的 RP 互不影响。</div>
-          <div class="detail-table">
-            <thead><tr><th>维度</th><th>示例</th></tr></thead>
-            <tbody>
-              <tr><td class="mono">RoomTypeID</td><td>大床房、双床房</td></tr>
-              <tr><td class="mono">BedTypeID</td><td>大床、双床、三床</td></tr>
-              <tr><td class="mono">MealTypeID + MealAmount</td><td>含早×2、不含早</td></tr>
-              <tr><td class="mono">IsNonRefundable</td><td>可取消、不可取消</td></tr>
-            </tbody>
-          </div>
-          <div class="note-box">坑位合并后，同一坑位只出一条报价。TopCount 控制每个坑位出几条，最优取消政策额外再出一条。</div>
-        </div>
-
-        <div class="glossary-card">
-          <div class="glossary-key">ClientID</div>
-          <div class="glossary-sub">机构 / 渠道标识</div>
-          <div class="glossary-desc">每个接入 Dida 的渠道/机构有唯一 ID，如 <span class="mono">DidaOpaq</span>、<span class="mono">AgodaUK</span>、<span class="mono">A__map</span>。大部分配置按 ClientID 维度生效，不同机构可以有不同配置。</div>
-          <div class="summary-badges"><span class="badge badge-blue">配置维度</span><span class="badge badge-green">机构隔离</span></div>
-        </div>
-
-        <div class="glossary-card">
-          <div class="glossary-key">Wolf / Dolphin</div>
-          <div class="glossary-sub">Dida 配置中心</div>
-          <div class="glossary-desc"><strong>Wolf：</strong>机构级配置中心，按 ClientID + Key 存储。大部分业务配置在这里。<br><strong>Dolphin：</strong>全局配置中心，不按机构区分，存 Redis 连接串等全局参数。</div>
-          <div class="summary-badges"><span class="badge badge-blue">Wolf = 机构级</span><span class="badge badge-green">Dolphin = 全局</span></div>
-          <div class="detail-row" style="margin-top:8px;"><strong>Wolf V2 API：</strong>POST 到 <span class="mono">wolf-caller-api.didaadmin.com</span>，需要 clientIds 参数。<br><strong>Dolphin API：</strong>GET 到 <span class="mono">wolf-v3-api.didainternal.com:8081</span>，需要 Bearer Token。</div>
-        </div>
-
-      </div>
-    </div><!-- /page-glossary -->
-
   </div>
 </div>
 
@@ -899,26 +832,11 @@ else → 正常输出</div>
     document.querySelectorAll('.pipe-step').forEach((s, i) => s.classList.toggle('active', i === index));
     document.querySelectorAll('.section').forEach((s, i) => s.classList.toggle('active', i === index));
   }
-  function showPage(page) {
-    const configPage = document.getElementById('page-config');
-    const glossaryPage = document.getElementById('page-glossary');
-    const navConfig = document.getElementById('nav-config');
-    const navGlossary = document.getElementById('nav-glossary');
-    const headerTitle = document.querySelector('.header-title');
-    if (page === 'config') {
-      configPage.style.display = '';
-      glossaryPage.style.display = 'none';
-      navConfig.classList.add('active');
-      navGlossary.classList.remove('active');
-      headerTitle.textContent = '渠道侧 RP 露出配置';
-    } else {
-      configPage.style.display = 'none';
-      glossaryPage.style.display = '';
-      navGlossary.classList.add('active');
-      navConfig.classList.remove('active');
-      headerTitle.textContent = '术语速查';
+  document.addEventListener('click', function(e) {
+    if (!e.target.classList.contains('term-icon')) {
+      document.querySelectorAll('.term-pop.show').forEach(p => p.classList.remove('show'));
     }
-  }
+  });
 </script>
 </body>
 </html>
