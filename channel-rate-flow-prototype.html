@@ -95,6 +95,8 @@
   .summary-url a { color: var(--accent); text-decoration: none; font-family: "SFMono-Regular", Consolas, monospace; }
   .summary-url a:hover { text-decoration: underline; }
   .summary-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .badge a { color: inherit; text-decoration: none; }
+  .badge a:hover { text-decoration: underline; }
   .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
   .badge-blue { background: var(--accent-light); color: var(--accent); }
   .badge-green { background: var(--green-light); color: var(--green); }
@@ -211,7 +213,7 @@
           <div class="config-summary">
             <div class="summary-desc">控制 ARI 和 Rate 场景下是否检查国籍限制。开启后请求无国籍直接报错，后续配置不执行。</div>
             <div class="summary-badges">
-              <span class="badge badge-red">ARI + Rate</span>
+              <span class="badge badge-red"><a href="javascript:void(0)" onclick="showPage('glossary')">ARI</a> + <a href="javascript:void(0)" onclick="showPage('glossary')">Rate</a></span>
               <span class="badge badge-blue">DidaAPI ONLY</span>
               <span class="badge badge-green">默认：否</span>
             </div>
@@ -244,7 +246,7 @@
             <div class="summary-desc">为机构指定子渠道，控制查价时是否忽略国籍限制。应用于 <strong>ARI</strong> 和 <strong>Rate</strong> 两个场景。</div>
             <div class="summary-url"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dida.Biz.Rate.SubClientID" target="_blank">wolf.didaadmin.com/.../SubClientID</a></div>
             <div class="summary-badges">
-              <span class="badge badge-blue">ARI + Rate</span>
+              <span class="badge badge-blue"><a href="javascript:void(0)" onclick="showPage('glossary')">ARI</a> + <a href="javascript:void(0)" onclick="showPage('glossary')">Rate</a></span>
               <span class="badge badge-orange">四档国籍控制</span>
             </div>
 
@@ -309,7 +311,7 @@
             <div class="summary-desc">当国籍被过滤时，决定最终用什么国籍去查供应商。按优先级从高到低依次匹配，<strong>命中即止</strong>。仅用于 <strong>Rate（查价/验价）</strong>。</div>
             <div class="summary-url"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dida.Biz.Rate.NationalityHackUnified" target="_blank">wolf.didaadmin.com/.../NationalityHackUnified</a></div>
             <div class="summary-badges">
-              <span class="badge badge-blue">Rate only</span>
+              <span class="badge badge-blue"><a href="javascript:void(0)" onclick="showPage('glossary')">Rate</a> only</span>
               <span class="badge badge-orange">三级优先级</span>
               <span class="badge badge-purple">含 HackLiability</span>
             </div>
