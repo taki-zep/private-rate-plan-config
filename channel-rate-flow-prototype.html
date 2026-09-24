@@ -75,7 +75,7 @@
 
   /* Config list — progressive disclosure */
   .config-list { display: flex; flex-direction: column; gap: 12px; }
-  .config-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .config-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); }
 
   /* Header — always visible */
   .config-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; cursor: pointer; user-select: none; transition: background 0.1s; }
@@ -145,13 +145,13 @@
 
   /* Term tooltip */
   .term-wrap { position: relative; display: inline-flex; align-items: center; gap: 3px; }
-  .term-icon { cursor: pointer; font-size: 11px; color: rgba(255,255,255,0.6); width: 15px; height: 15px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.35); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; transition: all 0.15s; }
+  .term-icon { cursor: pointer; font-size: 10px; color: rgba(255,255,255,0.6); width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.35); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; transition: all 0.15s; line-height: 1; }
   .term-icon:hover { background: rgba(255,255,255,0.2); color: #fff; }
-  .term-pop { display: none; position: absolute; top: calc(100% + 6px); left: 0; z-index: 100; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; min-width: 300px; max-width: 380px; font-size: 12px; color: var(--text-secondary); line-height: 1.6; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-  .term-pop::before { content: ''; position: absolute; top: -6px; left: 14px; width: 10px; height: 10px; background: #fff; border-left: 1px solid var(--border); border-top: 1px solid var(--border); transform: rotate(45deg); }
+  .term-pop { display: none; position: absolute; top: calc(100% + 6px); left: -8px; z-index: 100; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; min-width: 340px; max-width: 500px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.7; box-shadow: 0 6px 24px rgba(0,0,0,0.12); overflow: visible; }
+  .term-pop::before { content: ''; position: absolute; top: -6px; left: 16px; width: 10px; height: 10px; background: #fff; border-left: 1px solid var(--border); border-top: 1px solid var(--border); transform: rotate(45deg); }
   .term-pop.show { display: block; }
   .term-pop strong { color: var(--text-primary); }
-  .term-pop .tp-row { margin-bottom: 6px; }
+  .term-pop .tp-row { margin-bottom: 8px; }
   .term-pop .tp-row:last-child { margin-bottom: 0; }
 </style>
 </head>
@@ -832,10 +832,22 @@ else → 正常输出</div>
     document.querySelectorAll('.pipe-step').forEach((s, i) => s.classList.toggle('active', i === index));
     document.querySelectorAll('.section').forEach((s, i) => s.classList.toggle('active', i === index));
   }
-  document.addEventListener('click', function(e) {
-    if (!e.target.classList.contains('term-icon')) {
-      document.querySelectorAll('.term-pop.show').forEach(p => p.classList.remove('show'));
-    }
+  // Term tooltip: show on hover, also toggle on click
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.term-wrap').forEach(function(wrap) {
+      var icon = wrap.querySelector('.term-icon');
+      var pop = wrap.querySelector('.term-pop');
+      if (!icon || !pop) return;
+      icon.addEventListener('mouseenter', function() { pop.classList.add('show'); });
+      icon.addEventListener('mouseleave', function() { pop.classList.remove('show'); });
+      icon.addEventListener('click', function(e) {
+        e.stopPropagation();
+        pop.classList.toggle('show');
+      });
+    });
+    document.addEventListener('click', function() {
+      document.querySelectorAll('.term-pop.show').forEach(function(p) { p.classList.remove('show'); });
+    });
   });
 </script>
 </body>
