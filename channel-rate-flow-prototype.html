@@ -539,7 +539,7 @@
                     <tr><td class="mono">MinAfterBookingHours: 3</td><td>下单后 3h 不可免费取消 → 移除</td></tr>
                   </tbody>
                 </table>
-                <div class="note-box" style="margin-top:10px;"><strong>示例：</strong>一个 RP 入住时间为 2025-07-28 00:00:00，免费取消截止时间为 2025-07-26 12:00:00，则该 RP 的免取时间是入住前 36 小时。假设配置 <code style="font-family:monospace;font-size:11px;background:#fff;padding:1px 4px;border-radius:3px;">MaxBeforeCheckInHours: 24</code>，即入住前 24 小时不可免取的 RP 会被过滤。现在 36h > 24h，该 RP <strong>会被过滤</strong>。</div>
+                <div class="note-box" style="margin-top:10px;"><strong>示例：</strong>一个 RP 入住时间为 2025-07-28 00:00:00，免费取消截止时间为 2025-07-26 12:00:00，则该 RP 的免取时间是入住前 36 小时。假设配置 <code style="font-family:monospace;font-size:11px;background:#fff;padding:1px 4px;border-radius:3px;">MaxBeforeCheckInHours: 24</code>，即入住前 24 小时不可免取的 RP 会被过滤。现在 36h &gt; 24h，该 RP <strong>不会被过滤</strong>（保留）。反之，若免取时间为 12h（如取消截止时间为 2025-07-27 12:00:00），12h &lt; 24h，则该 RP <strong>会被过滤</strong>。</div>
                 <div class="note-box warn"><strong>或关系：</strong>满足<strong>任一</strong>条件即移除（不是同时满足才移除）</div>
               </div>
             </div>
