@@ -117,7 +117,7 @@
   /* Shared detail elements */
   .detail-row { margin-top: 10px; font-size: 12.5px; line-height: 1.6; color: var(--text-secondary); }
   .detail-row strong { color: var(--text-primary); }
-  .detail-table { display: table; width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+  .detail-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
   .detail-table th, .detail-table td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; }
   .detail-table th { background: #f8fafc; font-weight: 600; color: var(--text-secondary); font-size: 11.5px; }
   .detail-table td { color: var(--text-secondary); }
@@ -325,14 +325,14 @@
               <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">优先级与输出 <span class="sm-toggle">▼</span></div>
               <div class="sub-module-body">
                 <div class="detail-row">匹配输出两个结果：<strong>NationalityOutput</strong>（用什么国籍查供应商）和 <strong>HackLiability</strong>（争议单责任方）</div>
-                <div class="detail-table" style="margin-top:8px;">
+                <table class="detail-table" style="margin-top:8px;">
                   <thead><tr><th>优先级</th><th>节点</th><th>说明</th></tr></thead>
                   <tbody>
                     <tr><td>1（最高）</td><td class="mono">ClientSupplierRules</td><td>渠道+供应商+酒店国家+请求国籍 精确匹配</td></tr>
                     <tr><td>2</td><td class="mono">ClientOverrides</td><td>机构级统一指定国籍</td></tr>
                     <tr><td>3</td><td class="mono">BaseSettings</td><td>代码硬编码兜底：OptionsInput → CRM → CN</td></tr>
                   </tbody>
-                </div>
+                </table>
                 <div class="note-box warn"><strong>特殊规则：</strong>HackLiability = Channel 且输出国籍 ≠ 渠道输入时 → 返回 ChannelInput（渠道原始国籍）</div>
               </div>
             </div>
@@ -340,7 +340,7 @@
             <div class="sub-module">
               <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">CS 级别匹配条件 <span class="sm-toggle">▼</span></div>
               <div class="sub-module-body">
-                <div class="detail-table">
+                <table class="detail-table">
                   <thead><tr><th>优先级</th><th>条件组合</th></tr></thead>
                   <tbody>
                     <tr><td>1</td><td>ClientIDList + DidaHotelCountryCode + OptionsInput</td></tr>
@@ -348,21 +348,21 @@
                     <tr><td>3</td><td>ClientIDList + OptionsInput</td></tr>
                     <tr><td>4</td><td>ClientIDList</td></tr>
                   </tbody>
-                </div>
+                </table>
               </div>
             </div>
 
             <div class="sub-module">
               <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">渠道级覆盖策略 <span class="sm-toggle">▼</span></div>
               <div class="sub-module-body">
-                <div class="detail-table">
+                <table class="detail-table">
                   <thead><tr><th>策略值</th><th>含义</th></tr></thead>
                   <tbody>
                     <tr><td class="mono">UseRequestNationality</td><td>使用渠道请求中的原始国籍</td></tr>
                     <tr><td class="mono">UseDidaHotelCountryCode</td><td>使用酒店所在国国籍</td></tr>
                     <tr><td>两位国籍码（如 KR）</td><td>强制指定该国籍</td></tr>
                   </tbody>
-                </div>
+                </table>
                 <div class="detail-row">可选 <span class="mono">DidaHotelCountryMap</span>：先按国家映射表匹配，命中则直接返回映射后的国籍；未命中再走 ClientActionStrategy。</div>
               </div>
             </div>
@@ -422,7 +422,7 @@
             <div class="sub-module">
               <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">聚合维度 + 取值规则 <span class="sm-toggle">▼</span></div>
               <div class="sub-module-body">
-                <div class="detail-table">
+                <table class="detail-table">
                   <thead><tr><th>#</th><th>维度</th><th>说明</th></tr></thead>
                   <tbody>
                     <tr><td>2</td><td class="mono">RoomTypeID</td><td>房型 ID</td></tr>
@@ -437,7 +437,7 @@
                     <tr><td>12</td><td class="mono">InvoiceAcquireTypeID</td><td>开票人类型</td></tr>
                     <tr><td>13</td><td class="mono">IsForceAsNonRefund</td><td>复制的不可取消 RP（天然不同组）</td></tr>
                   </tbody>
-                </div>
+                </table>
                 <div class="formula-box">OrderBy(TotalPrice).ThenByDescending(CancellationList.First().FromDate)
 // 取分组中价格最低、且免取时间最晚的一条</div>
               </div>
@@ -463,7 +463,7 @@
             <div class="sub-module">
               <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">不支持 RP 合并的场景 <span class="sm-toggle">▼</span></div>
               <div class="sub-module-body">
-                <div class="detail-table">
+                <table class="detail-table">
                   <thead><tr><th>场景</th><th>原因</th><th>相关配置</th></tr></thead>
                   <tbody>
                     <tr><td>SwitchClient</td><td>不走 RP 合并</td><td class="mono">Dida.Biz.SwitchConfig</td></tr>
@@ -471,20 +471,20 @@
                     <tr><td>验价时"询价代替"</td><td>不走 RP 合并</td><td class="mono">RPToHotelSearchV2</td></tr>
                     <tr><td>渠道缓存单天构建连住</td><td>合并后每天 RP 不同</td><td>—</td></tr>
                   </tbody>
-                </div>
+                </table>
               </div>
             </div>
 
             <div class="sub-module">
               <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">相关配置 + 适配渠道 <span class="sm-toggle">▼</span></div>
               <div class="sub-module-body">
-                <div class="detail-table">
+                <table class="detail-table">
                   <thead><tr><th>配置 Key</th><th>说明</th></tr></thead>
                   <tbody>
                     <tr><td class="mono">MergeRatePlanDidaHotel.Config</td><td>酒店维度 RP 合并（Dolphin）</td></tr>
                     <tr><td class="mono">RedisConnectionString.Channel.MergeRatePlanData</td><td>RP 合并 Redis 连接串（Dolphin）</td></tr>
                   </tbody>
-                </div>
+                </table>
                 <div class="detail-row" style="margin-top:8px;"><strong>已完成适配的渠道：</strong>DidaApi、Agoda、SnapTravel、DerbySoft、飞猪国际、美团国际、去哪儿国际</div>
               </div>
             </div>
@@ -531,14 +531,14 @@
             <div class="sub-module">
               <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">配置值与含义 <span class="sm-toggle">▼</span></div>
               <div class="sub-module-body">
-                <div class="detail-table">
+                <table class="detail-table">
                   <thead><tr><th>配置值</th><th>含义</th></tr></thead>
                   <tbody>
                     <tr><td class="mono">{}</td><td>过滤全部不可取消 RP（包括 -N RP），只出可取消的</td></tr>
                     <tr><td class="mono">MaxBeforeCheckInHours: 72</td><td>入住前 72h 内不可免费取消 → 移除</td></tr>
                     <tr><td class="mono">MinAfterBookingHours: 3</td><td>下单后 3h 内不可免费取消 → 移除</td></tr>
                   </tbody>
-                </div>
+                </table>
                 <div class="note-box warn"><strong>或关系：</strong>满足<strong>任一</strong>条件即移除（不是同时满足才移除）</div>
               </div>
             </div>
@@ -674,7 +674,7 @@ else → 正常输出</div>
             <div class="sub-module">
               <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">配置格式 + Wolf V2 映射 <span class="sm-toggle">▼</span></div>
               <div class="sub-module-body">
-                <div class="detail-table">
+                <table class="detail-table">
                   <thead><tr><th>老配置位置</th><th>Wolf V2 Key</th><th>含义</th></tr></thead>
                   <tbody>
                     <tr><td>第 1 位</td><td class="mono" style="font-size:10px">MappedRoomTypeTopCountForBreakfastCancellation</td><td>已匹配房型，4 坑位各出 N 条最低价</td></tr>
@@ -682,7 +682,7 @@ else → 正常输出</div>
                     <tr><td>第 3 位</td><td class="mono" style="font-size:10px">MappedRoomTypeTopCountForOptimalCancellationBreakfast</td><td>已匹配房型，额外按最优取消政策取 N 条</td></tr>
                     <tr><td>第 4 位</td><td class="mono" style="font-size:10px">UnmappedRoomTypeTopCountForOptimalCancellationBreakfast</td><td>未匹配房型，同上</td></tr>
                   </tbody>
-                </div>
+                </table>
                 <div class="note-box warn" style="margin-top:8px;">⚠️ <strong>待确认：</strong>Wolf V1 和 Wolf V2 是否同时生效，需找开发确认。</div>
               </div>
             </div>
@@ -691,7 +691,7 @@ else → 正常输出</div>
               <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">4 坑位 + 示例 <span class="sm-toggle">▼</span></div>
               <div class="sub-module-body">
                 <div class="detail-row"><strong>4 个基础坑位：</strong>含早/不含早 × 可取消/不可取消，每个坑位出 N 条最低价</div>
-                <div class="detail-table" style="margin-top:8px;">
+                <table class="detail-table" style="margin-top:8px;">
                   <thead><tr><th>组合</th><th>最近免费取消时间</th><th>老配置</th><th>新配置</th></tr></thead>
                   <tbody>
                     <tr><td>含早+不可取消</td><td>2026-01-17</td><td>出（¥100）</td><td>出</td></tr>
@@ -701,7 +701,7 @@ else → 正常输出</div>
                     <tr><td style="font-weight:600">含早+可取消+最优取消政策</td><td style="font-weight:600">2026-02-15</td><td>—</td><td style="font-weight:600;color:var(--green)">出（¥170，新增）</td></tr>
                     <tr><td style="font-weight:600">不含早+可取消+最优取消政策</td><td style="font-weight:600">2026-02-15</td><td>—</td><td style="font-weight:600;color:var(--green)">出（¥200，新增）</td></tr>
                   </tbody>
-                </div>
+                </table>
                 <div class="note-box"><strong>Dida 对"可取消"的定义：</strong>下单那一刻可取消，就算可取消。</div>
               </div>
             </div>
@@ -817,13 +817,13 @@ else → 正常输出</div>
             <span class="config-toggle">▼</span>
           </div>
           <div class="config-summary">
-            <div class="detail-table">
+            <table class="detail-table">
               <thead><tr><th>数据</th><th>存储位置</th></tr></thead>
               <tbody>
                 <tr><td>渠道准确率</td><td class="mono">didadata.rateaccuracy.rate_accuracy_channel</td></tr>
                 <tr><td>供应商准确率</td><td class="mono">didadata.rateaccuracy.rate_accuracy_supplier</td></tr>
               </tbody>
-            </div>
+            </table>
           </div>
         </div>
 
