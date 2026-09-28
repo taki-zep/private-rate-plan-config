@@ -355,7 +355,8 @@
             <div class="sub-module">
               <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">渠道级覆盖策略 <span class="sm-toggle">▼</span></div>
               <div class="sub-module-body">
-                <table class="detail-table">
+                <div class="detail-row"><strong>对应配置：</strong><span class="mono">NationalityHackUnified</span> → <span class="mono">ClientRules</span> → <span class="mono">ClientOverrides</span> → <span class="mono">ClientActionStrategy</span> 字段</div>
+                <table class="detail-table" style="margin-top:10px;">
                   <thead><tr><th>策略值</th><th>含义</th></tr></thead>
                   <tbody>
                     <tr><td class="mono">UseRequestNationality</td><td>使用渠道请求中的原始国籍</td></tr>
