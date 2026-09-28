@@ -106,12 +106,12 @@
   .badge-teal { background: var(--teal-light); color: var(--teal); }
 
   /* Sub-module — collapsible within expanded item */
-  .sub-module { margin-top: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+  .sub-module { margin-top: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); }
   .sub-module-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: pointer; user-select: none; background: #fafbfc; font-size: 12.5px; font-weight: 600; color: var(--text-primary); transition: background 0.1s; }
   .sub-module-header:hover { background: #f1f5f9; }
   .sub-module-header .sm-toggle { font-size: 12px; color: var(--text-muted); transition: transform 0.15s; margin-left: auto; }
   .sub-module.open > .sub-module-header .sm-toggle { transform: rotate(180deg); }
-  .sub-module-body { display: none; padding: 10px 12px; border-top: 1px solid var(--border); }
+  .sub-module-body { display: none; padding: 10px 12px; border-top: 1px solid var(--border); overflow-x: auto; }
   .sub-module.open > .sub-module-body { display: block; }
 
   /* Shared detail elements */
