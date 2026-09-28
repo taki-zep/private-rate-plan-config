@@ -136,7 +136,7 @@
   .rel-node { padding: 6px 12px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; white-space: nowrap; }
   .rel-arrow { color: var(--text-muted); font-size: 16px; }
   .formula-box { background: #1e293b; color: #e2e8f0; font-family: "SFMono-Regular", Consolas, monospace; font-size: 12px; padding: 10px 14px; border-radius: var(--radius-sm); margin-top: 8px; line-height: 1.6; overflow-x: auto; }
-  .overview-table { display: table; width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 12px; }
+  .overview-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 12px; }
   .overview-table th, .overview-table td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; }
   .overview-table th { background: #f8fafc; font-weight: 600; color: var(--text-secondary); font-size: 11.5px; }
   .overview-table td { color: var(--text-secondary); }
@@ -499,16 +499,16 @@
       <div class="section-title">③ 逐条 RP 过滤</div>
       <div class="section-desc">对坑位合并后的每条 RP 逐一判断是否满足露出条件。不满足的被过滤掉，不进入后续环节。</div>
 
-      <div class="overview-table">
+      <table class="overview-table">
         <thead><tr><th>过滤类型</th><th>说明</th><th>配置项</th></tr></thead>
         <tbody>
           <tr><td>国籍限制</td><td>RP 售卖国籍与 Hack 后的国籍不匹配</td><td class="mono">SubClientID</td></tr>
-          <tr><td>到店付服务费</td><td>含到店付服务费的报价被过滤 ⚠️ 待确认：哪些供应商/机构</td><td class="mono">MandatoryFeesConfig</td></tr>
+          <tr><td>到店付服务费</td><td>含到店付服务费的报价被过滤 ️ 待确认：哪些供应商/机构</td><td class="mono">MandatoryFeesConfig</td></tr>
           <tr><td>不可取消 RP 过滤</td><td>按入住前/下单后时间条件过滤</td><td class="mono">NonRefundFilterV2</td></tr>
           <tr><td>入住人数过滤</td><td>过滤餐型/人数不一致的报价</td><td class="mono">OccupancyFilterConfig</td></tr>
           <tr><td>低余额降级</td><td>余额不足时切换为缓存报价</td><td class="mono">LowBalanceSwitchToCache</td></tr>
         </tbody>
-      </div>
+      </table>
 
       <div class="config-list">
 
