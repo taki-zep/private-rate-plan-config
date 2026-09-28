@@ -672,7 +672,7 @@ else → 正常输出</div>
               <span class="badge badge-orange">1.0/2.0 两版本</span>
               <span class="badge badge-blue">Wolf V2 已迁移</span>
             </div>
-            <div class="note-box warn" style="margin-top:8px;"><strong>互斥：</strong>开了 RP 合并则此配置完全不生效。RP 合并每组只留 1 条最低价，无法输出"价格更高但取消政策更好"的报价。</div>
+            <div class="note-box warn" style="margin-top:8px;"><strong>互斥：</strong>开了 RP 合并（<span class="mono">Channel.MergeRatePlan.Config</span>）则此配置完全不生效。RP 合并每组只留 1 条最低价，无法输出"价格更高但取消政策更好"的报价。</div>
 
             <div class="sub-module">
               <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">配置格式 + Wolf V2 映射 <span class="sm-toggle">▼</span></div>
@@ -686,7 +686,6 @@ else → 正常输出</div>
                     <tr><td>第 4 位</td><td class="mono" style="font-size:10px">UnmappedRoomTypeTopCountForOptimalCancellationBreakfast</td><td>未匹配房型，同上</td></tr>
                   </tbody>
                 </table>
-                <div class="note-box warn" style="margin-top:8px;">⚠️ <strong>待确认：</strong>Wolf V1 和 Wolf V2 是否同时生效，需找开发确认。</div>
               </div>
             </div>
 
