@@ -45,11 +45,10 @@
   .sidebar-nav-item:hover { background: rgba(255,255,255,0.04); }
   .sidebar-nav-item.active { background: rgba(59,130,246,0.15); color: #60a5fa; font-weight: 600; }
   .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  .header { background: #fff; border-bottom: 1px solid var(--border); padding: 0 24px; height: 50px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .header { background: #fff; border-bottom: 1px solid var(--border); padding: 0 24px; height: 50px; display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
   .breadcrumb { font-size: 12.5px; color: var(--text-muted); }
   .breadcrumb a { color: var(--accent); text-decoration: none; }
   .breadcrumb .sep { margin: 0 6px; }
-  .header-title { font-size: 15px; font-weight: 600; }
   .ref-doc-btn {
     font-size: 12px;
     padding: 5px 12px;
@@ -185,7 +184,6 @@
 <div class="main">
   <header class="header">
     <div class="breadcrumb"><a href="#">RP 露出管理</a><span class="sep">/</span>配置总览</div>
-    <div class="header-title">渠道侧 RP 露出配置</div>
     <a href="https://github.com/taki-zep/private-rate-plan-config/blob/main/渠道侧报价逻辑梳理.md" target="_blank" class="ref-doc-btn">📄 参考文档</a>
   </header>
 
