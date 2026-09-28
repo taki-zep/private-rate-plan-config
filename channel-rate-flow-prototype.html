@@ -561,7 +561,7 @@
 else → 正常输出</div>
                 <div class="detail-row" style="margin-top:10px;"><strong>参考文档：</strong><a href="https://didatravel.feishu.cn/wiki/Uc50wONoKiO2Q8khpxFcWcH8nnk" target="_blank" style="color:var(--accent);text-decoration:none;">https://didatravel.feishu.cn/wiki/Uc50wONoKiO2Q8khpxFcWcH8nnk</a></div>
                 <div class="note-box warn" style="margin-top:10px;"><strong>⚠️ 此配置生效逻辑存疑，需讨论：</strong>按文档字面含义"入住前 N 小时不可免费取消的报价移除"，应理解为免取时间 > 配置值时移除。但实际代码逻辑为 < 配置值时移除，两者相反。详见参考文档中的推演分析。</div>
-                <img src="不可取消露出质疑推演.jpeg" alt="不可取消露出逻辑质疑推演" style="width:100%;max-width:900px;margin-top:12px;border:1px solid var(--border);border-radius:var(--radius-sm);">
+                <img src="不可取消露出质疑推演.jpeg" alt="不可取消露出逻辑质疑推演" style="width:100%;max-width:1200px;margin-top:12px;border:1px solid var(--border);border-radius:var(--radius-sm);">
                 <div class="flow-steps" style="margin-top:10px;">
                   <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">1</div><div class="fs-text">RP 合并 → RP 过滤 → 复制不可取消 RP → <strong>不可取消过滤</strong>（最后一道）</div></div>
                   <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">2</div><div class="fs-text">配置为 <code style="font-family:monospace;font-size:11.5px">{}</code> → 所有不可取消 RP（含 -N RP）全部被过滤</div></div>
