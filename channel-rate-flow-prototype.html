@@ -256,21 +256,6 @@
             </div>
 
             <div class="sub-module">
-              <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">四档说明 <span class="sm-toggle">▼</span></div>
-              <div class="sub-module-body">
-                <div class="detail-table">
-                  <thead><tr><th>档位</th><th>值</th><th>含义</th></tr></thead>
-                  <tbody>
-                    <tr><td class="mono">None</td><td>空数组</td><td>不限制国籍</td></tr>
-                    <tr><td class="mono">International</td><td>["2"]</td><td>外宾：允许卖其他国籍 RP</td></tr>
-                    <tr><td class="mono">Domestic</td><td>["3"]</td><td>内宾：只卖酒店国籍 RP</td></tr>
-                    <tr><td class="mono">China</td><td>["4"]</td><td>中宾：允许 CN/TW/HK RP</td></tr>
-                  </tbody>
-                </div>
-              </div>
-            </div>
-
-            <div class="sub-module">
               <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">触发条件（同时满足） <span class="sm-toggle">▼</span></div>
               <div class="sub-module-body">
                 <div class="flow-steps">
@@ -298,6 +283,21 @@
   }
 }</div>
                 <div class="detail-row"><strong>如何关闭：</strong>设 <code style="font-family:monospace;font-size:11.5px">"NationalitySubChannelID": {}</code> 即可。</div>
+              </div>
+            </div>
+
+            <div class="sub-module">
+              <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">四档说明 <span class="sm-toggle">▼</span></div>
+              <div class="sub-module-body">
+                <table class="detail-table">
+                  <thead><tr><th>档位</th><th>值</th><th>含义</th></tr></thead>
+                  <tbody>
+                    <tr><td class="mono">None</td><td>空数组</td><td>不限制国籍</td></tr>
+                    <tr><td class="mono">International</td><td>["2"]</td><td>外宾：允许卖其他国籍 RP</td></tr>
+                    <tr><td class="mono">Domestic</td><td>["3"]</td><td>内宾：只卖酒店国籍 RP</td></tr>
+                    <tr><td class="mono">China</td><td>["4"]</td><td>中宾：允许 CN/TW/HK RP</td></tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
