@@ -50,6 +50,18 @@
   .breadcrumb a { color: var(--accent); text-decoration: none; }
   .breadcrumb .sep { margin: 0 6px; }
   .header-title { font-size: 15px; font-weight: 600; }
+  .ref-doc-btn {
+    font-size: 12px;
+    padding: 5px 12px;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    transition: background 0.12s;
+    white-space: nowrap;
+  }
+  .ref-doc-btn:hover { background: #2563eb; }
   .content { flex: 1; overflow-y: auto; padding: 20px 24px 32px; }
 
   /* Pipeline bar */
@@ -174,6 +186,7 @@
   <header class="header">
     <div class="breadcrumb"><a href="#">RP 露出管理</a><span class="sep">/</span>配置总览</div>
     <div class="header-title">渠道侧 RP 露出配置</div>
+    <a href="https://github.com/taki-zep/private-rate-plan-config/blob/main/渠道侧报价逻辑梳理.md" target="_blank" class="ref-doc-btn">📄 参考文档</a>
   </header>
 
   <div class="content">
@@ -756,11 +769,10 @@ else → 正常输出</div>
             <span class="config-toggle">▼</span>
           </div>
           <div class="config-summary">
-            <div class="summary-desc">将可取消 RP 复制一份标记为不可取消，增加渠道报价选择。仅在单酒店实时查价中生效。RPID 后缀 -N，不参与 RP 合并。</div>
+            <div class="summary-desc">将可取消 RP 复制一份标记为不可取消，增加渠道报价选择。仅在单酒店实时查价中生效，不参与 RP 合并。</div>
             <div class="summary-url"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.DuplicateRefundableAsNonRefundable" target="_blank">wolf.didaadmin.com/.../DuplicateRefundableAsNonRefundable</a></div>
             <div class="summary-badges">
               <span class="badge badge-green">单酒店实时查价</span>
-              <span class="badge badge-orange">RPID 后缀 -N</span>
               <span class="badge badge-purple">不参与 RP 合并</span>
             </div>
 
@@ -770,8 +782,7 @@ else → 正常输出</div>
                 <div class="flow-steps">
                   <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">1</div><div class="fs-text">仅在<strong>单酒店实时查价</strong>中生效</div></div>
                   <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">2</div><div class="fs-text">复制可取消 RP，标记 <span class="mono">IsForceAsNonRefund = True</span></div></div>
-                  <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">3</div><div class="fs-text">RPID 格式：<strong>原RPID + "-N"</strong>（如 <span class="mono">123456-N</span>）</div></div>
-                  <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">4</div><div class="fs-text"><strong>不参与 RP 合并</strong>（IsForceAsNonRefund 不同，天然分属不同组）</div></div>
+                  <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">3</div><div class="fs-text"><strong>不参与 RP 合并</strong>（IsForceAsNonRefund 不同，天然分属不同组）</div></div>
                 </div>
                 <div class="formula-box" style="margin-top:10px;">执行顺序：RP 合并 → RP 过滤 → 复制不可取消 RP → 不可取消过滤（最后一道关卡）</div>
               </div>
