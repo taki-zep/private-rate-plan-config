@@ -192,9 +192,9 @@
     <div class="pipeline-bar">
       <div class="pipe-step active" data-step="1" onclick="showSection(0)"><div class="pipe-dot">①</div><div class="pipe-label">国籍处理</div></div>
       <div class="pipe-arrow">→</div>
-      <div class="pipe-step" data-step="2" onclick="showSection(1)"><div class="pipe-dot">②</div><div class="pipe-label">坑位合并</div></div>
+      <div class="pipe-step" data-step="2" onclick="showSection(1)"><div class="pipe-dot">②</div><div class="pipe-label">RP 过滤</div></div>
       <div class="pipe-arrow">→</div>
-      <div class="pipe-step" data-step="3" onclick="showSection(2)"><div class="pipe-dot">③</div><div class="pipe-label">RP 过滤</div></div>
+      <div class="pipe-step" data-step="3" onclick="showSection(2)"><div class="pipe-dot">③</div><div class="pipe-label">坑位合并</div></div>
       <div class="pipe-arrow">→</div>
       <div class="pipe-step" data-step="4" onclick="showSection(3)"><div class="pipe-dot">④</div><div class="pipe-label">输出策略</div></div>
       <div class="pipe-arrow">→</div>
@@ -408,10 +408,150 @@
       </div>
     </div>
 
-    <!-- ═══ Section ② 坑位合并 ═══ -->
+    <!-- ═══ Section ② RP 过滤（原 sec-2，提前到 index 1） ═══ -->
+    <div class="section" id="sec-2">
+      <div class="section-title">② 逐条 RP 过滤</div>
+      <div class="section-desc">对供应商返回的每条 RP 逐一判断是否满足露出条件。过滤在合并之前执行，不满足条件的 RP 不进入后续合并环节。</div>
+
+      <table class="overview-table">
+        <thead><tr><th>过滤类型</th><th>说明</th><th>配置项</th></tr></thead>
+        <tbody>
+          <tr><td>国籍限制</td><td>RP 售卖国籍与 Hack 后的国籍不匹配</td><td class="mono">SubClientID</td></tr>
+          <tr><td>不可取消 RP 过滤</td><td>按入住前/下单后时间条件过滤</td><td class="mono">NonRefundFilterV2</td></tr>
+          <tr><td>入住人数过滤</td><td>过滤餐型/人数不一致的报价</td><td class="mono">OccupancyFilterConfig</td></tr>
+          <tr><td>低余额降级</td><td>余额不足时切换为缓存报价</td><td class="mono">LowBalanceSwitchToCache</td></tr>
+        </tbody>
+      </table>
+
+      <div class="config-list">
+
+        <!-- NonRefundFilterV2 -->
+        <div class="config-item">
+          <div class="config-header" onclick="this.parentElement.classList.toggle('open');if(this.parentElement.classList.contains('open')){this.parentElement.querySelectorAll('.sub-module').forEach(function(s){s.classList.add('open')})}">
+            <div class="left">
+              <span class="config-key-tag">NonRefundFilterV2</span>
+              <span class="config-brief">不可取消 RP 过滤（最后一道关卡）</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-summary">
+            <div class="summary-desc">控制不可取消 RP 的露出条件，是报价输出的<strong>最后一道关卡</strong>。对已完成过滤、合并和复制的全部 RP 进行过滤。</div>
+            <div class="summary-url"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/DidaAPI.Config.NonRefundFilterV2" target="_blank">wolf.didaadmin.com/.../NonRefundFilterV2</a></div>
+            <div class="summary-badges">
+              <span class="badge badge-red">最后一道关卡</span>
+              <span class="badge badge-orange">OR 关系</span>
+            </div>
+
+            <div class="sub-module">
+              <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">配置值与含义 <span class="sm-toggle">▼</span></div>
+              <div class="sub-module-body">
+                <table class="detail-table">
+                  <thead><tr><th>配置值</th><th>含义</th></tr></thead>
+                  <tbody>
+                    <tr><td class="mono">{}</td><td>过滤全部不可取消 RP（包括 -N RP），只出可取消的</td></tr>
+                    <tr><td class="mono">MaxBeforeCheckInHours: 72</td><td>入住前 72h 不可免费取消 → 移除</td></tr>
+                    <tr><td class="mono">MinAfterBookingHours: 3</td><td>下单后 3h 不可免费取消 → 移除</td></tr>
+                  </tbody>
+                </table>
+                <div class="note-box warn"><strong>或关系：</strong>满足<strong>任一</strong>条件即移除（不是同时满足才移除）</div>
+              </div>
+            </div>
+
+            <div class="sub-module">
+              <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">判断逻辑 + 执行时机 <span class="sm-toggle">▼</span></div>
+              <div class="sub-module-body">
+                <div class="formula-box">if (CheckinTime - 免费取消截止时间) < 配置小时数 → 过滤
+else → 正常输出</div>
+                <div class="detail-row" style="margin-top:10px;"><strong>参考文档：</strong><a href="https://didatravel.feishu.cn/wiki/Uc50wONoKiO2Q8khpxFcWcH8nnk" target="_blank" style="color:var(--accent);text-decoration:none;">https://didatravel.feishu.cn/wiki/Uc50wONoKiO2Q8khpxFcWcH8nnk</a></div>
+                <div class="note-box warn" style="margin-top:10px;"><strong>⚠️ 此配置生效逻辑存疑，需讨论：</strong>按文档字面含义"入住前 N 小时不可免费取消的报价移除"，应理解为免取时间 > 配置值时移除。但实际代码逻辑为 < 配置值时移除，两者相反。详见参考文档中的推演分析。</div>
+                <img src="不可取消露出质疑推演.jpeg" alt="不可取消露出逻辑质疑推演" style="width:100%;max-width:1600px;margin-top:12px;border:1px solid var(--border);border-radius:var(--radius-sm);">
+                <div class="flow-steps" style="margin-top:10px;">
+                  <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">1</div><div class="fs-text">RP 过滤 → RP 合并 → 复制不可取消 RP → <strong>不可取消过滤</strong>（最后一道）</div></div>
+                  <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">2</div><div class="fs-text">配置为 <code style="font-family:monospace;font-size:11.5px">{}</code> → 所有不可取消 RP（含 -N RP）全部被过滤</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OccupancyFilterConfig -->
+        <div class="config-item">
+          <div class="config-header" onclick="this.parentElement.classList.toggle('open');if(this.parentElement.classList.contains('open')){this.parentElement.querySelectorAll('.sub-module').forEach(function(s){s.classList.add('open')})}">
+            <div class="left">
+              <span class="config-key-tag">OccupancyFilterConfig</span>
+              <span class="config-brief">入住人数过滤</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-summary">
+            <div class="summary-desc">过滤餐型/人数不一致的报价。按「床型筛选」和「餐食筛选」两步判断。</div>
+            <div class="summary-url"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dia.Biz.Rate.OccupancyFilterConfig" target="_blank">wolf.didaadmin.com/.../OccupancyFilterConfig</a></div>
+            <div class="summary-badges">
+              <span class="badge badge-blue">两步筛选</span>
+              <span class="badge badge-teal">含儿童控制</span>
+            </div>
+
+            <div class="sub-module">
+              <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">床型筛选 + 餐食筛选 <span class="sm-toggle">▼</span></div>
+              <div class="sub-module-body">
+                <div class="detail-row"><strong>床型筛选：</strong>实际入住人数（成人 + 儿童）vs 床型默认可入住人数，可入住 < 实际 → 排除</div>
+                <div class="detail-row"><strong>餐食筛选：</strong>早餐份数 vs 实际入住人数
+                  <ul style="margin-top:4px;padding-left:18px;">
+                    <li>餐数 < 实际人数 → 排除</li>
+                    <li>"不含餐"不做检查直接保留</li>
+                    <li>餐数信息缺失 → 排除</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="sub-module">
+              <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">儿童计入规则 <span class="sm-toggle">▼</span></div>
+              <div class="sub-module-body">
+                <div class="detail-row">由 <span class="mono">MealType</span>（餐型）和 <span class="mono">BedType</span>（床型）控制：<strong>0 = 不含儿童，1 = 含儿童</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LowBalanceSwitchToCache -->
+        <div class="config-item">
+          <div class="config-header" onclick="this.parentElement.classList.toggle('open');if(this.parentElement.classList.contains('open')){this.parentElement.querySelectorAll('.sub-module').forEach(function(s){s.classList.add('open')})}">
+            <div class="left">
+              <span class="config-key-tag">LowBalanceSwitchToCacheClientScopes</span>
+              <span class="config-brief">低余额降级切缓存</span>
+            </div>
+            <span class="config-toggle">▼</span>
+          </div>
+          <div class="config-summary">
+            <div class="summary-desc">供应商余额不足时切换为缓存报价，降低实时请求量，避免查价失败。余额恢复后回到原先方式。</div>
+            <div class="summary-url"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.Rate.LowBalanceSwitchToCacheClientScopes" target="_blank">wolf.didaadmin.com/.../LowBalanceSwitchToCache</a></div>
+            <div class="summary-badges">
+              <span class="badge badge-orange">后台 Job 监控</span>
+              <span class="badge badge-green">自动恢复</span>
+            </div>
+
+            <div class="sub-module">
+              <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">配置字段 + 执行逻辑 <span class="sm-toggle">▼</span></div>
+              <div class="sub-module-body">
+                <div class="detail-row"><strong>配置字段：</strong><span class="mono">SwitchCacheBalanceBaseLineCNY</span>（阈值，默认 500）+ <span class="mono">ClientIDList</span>（机构名单）</div>
+                <div class="flow-steps" style="margin-top:8px;">
+                  <div class="flow-step-row"><div class="fs-num" style="background:var(--orange)">1</div><div class="fs-text">Job 持续监控名单内机构余额</div></div>
+                  <div class="flow-step-row"><div class="fs-num" style="background:var(--orange)">2</div><div class="fs-text">余额 < 阈值 → 实时查询切换为缓存查询</div></div>
+                  <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">3</div><div class="fs-text">余额恢复 → <strong>恢复为原先方式</strong>（实时就实时，缓存就缓存，不主动覆盖）</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ Section ③ 坑位合并（原 sec-1，移到 index 2） ═══ -->
     <div class="section" id="sec-1">
-      <div class="section-title">② 坑位合并（RP 合并）</div>
-      <div class="section-desc">按<strong>房型+床型+餐型+能否取消</strong>的坑位组合，将供应商返回的 RP 做分组聚合，去除重复报价，减少渠道端计算量。</div>
+      <div class="section-title">③ 坑位合并（含多种策略）</div>
+      <div class="section-desc">按坑位组合做分组聚合，含两种互斥策略：<strong>RP合并</strong>（去重取最低价）和<strong>坑位报价数量+最优取消政策</strong>（多坑位多价格输出）</div>
 
       <div class="config-list">
         <div class="config-item open">
@@ -502,181 +642,27 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- ═══ Section ③ RP 过滤 ═══ -->
-    <div class="section" id="sec-2">
-      <div class="section-title">③ 逐条 RP 过滤</div>
-      <div class="section-desc">对坑位合并后的每条 RP 逐一判断是否满足露出条件。不满足的被过滤掉，不进入后续环节。</div>
-
-      <table class="overview-table">
-        <thead><tr><th>过滤类型</th><th>说明</th><th>配置项</th></tr></thead>
-        <tbody>
-          <tr><td>国籍限制</td><td>RP 售卖国籍与 Hack 后的国籍不匹配</td><td class="mono">SubClientID</td></tr>
-          <tr><td>不可取消 RP 过滤</td><td>按入住前/下单后时间条件过滤</td><td class="mono">NonRefundFilterV2</td></tr>
-          <tr><td>入住人数过滤</td><td>过滤餐型/人数不一致的报价</td><td class="mono">OccupancyFilterConfig</td></tr>
-          <tr><td>低余额降级</td><td>余额不足时切换为缓存报价</td><td class="mono">LowBalanceSwitchToCache</td></tr>
-        </tbody>
-      </table>
-
-      <div class="config-list">
-
-        <!-- NonRefundFilterV2 -->
-        <div class="config-item">
-          <div class="config-header" onclick="this.parentElement.classList.toggle('open');if(this.parentElement.classList.contains('open')){this.parentElement.querySelectorAll('.sub-module').forEach(function(s){s.classList.add('open')})}">
-            <div class="left">
-              <span class="config-key-tag">NonRefundFilterV2</span>
-              <span class="config-brief">不可取消 RP 过滤（最后一道关卡）</span>
-            </div>
-            <span class="config-toggle">▼</span>
-          </div>
-          <div class="config-summary">
-            <div class="summary-desc">控制不可取消 RP 的露出条件，是报价输出的<strong>最后一道关卡</strong>。对已完成合并、过滤和复制的全部 RP 进行过滤。</div>
-            <div class="summary-url"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/DidaAPI.Config.NonRefundFilterV2" target="_blank">wolf.didaadmin.com/.../NonRefundFilterV2</a></div>
-            <div class="summary-badges">
-              <span class="badge badge-red">最后一道关卡</span>
-              <span class="badge badge-orange">OR 关系</span>
-            </div>
-
-            <div class="sub-module">
-              <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">配置值与含义 <span class="sm-toggle">▼</span></div>
-              <div class="sub-module-body">
-                <table class="detail-table">
-                  <thead><tr><th>配置值</th><th>含义</th></tr></thead>
-                  <tbody>
-                    <tr><td class="mono">{}</td><td>过滤全部不可取消 RP（包括 -N RP），只出可取消的</td></tr>
-                    <tr><td class="mono">MaxBeforeCheckInHours: 72</td><td>入住前 72h 不可免费取消 → 移除</td></tr>
-                    <tr><td class="mono">MinAfterBookingHours: 3</td><td>下单后 3h 不可免费取消 → 移除</td></tr>
-                  </tbody>
-                </table>
-                <div class="note-box warn"><strong>或关系：</strong>满足<strong>任一</strong>条件即移除（不是同时满足才移除）</div>
-              </div>
-            </div>
-
-            <div class="sub-module">
-              <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">判断逻辑 + 执行时机 <span class="sm-toggle">▼</span></div>
-              <div class="sub-module-body">
-                <div class="formula-box">if (CheckinTime - 免费取消截止时间) < 配置小时数 → 过滤
-else → 正常输出</div>
-                <div class="detail-row" style="margin-top:10px;"><strong>参考文档：</strong><a href="https://didatravel.feishu.cn/wiki/Uc50wONoKiO2Q8khpxFcWcH8nnk" target="_blank" style="color:var(--accent);text-decoration:none;">https://didatravel.feishu.cn/wiki/Uc50wONoKiO2Q8khpxFcWcH8nnk</a></div>
-                <div class="note-box warn" style="margin-top:10px;"><strong>⚠️ 此配置生效逻辑存疑，需讨论：</strong>按文档字面含义"入住前 N 小时不可免费取消的报价移除"，应理解为免取时间 > 配置值时移除。但实际代码逻辑为 < 配置值时移除，两者相反。详见参考文档中的推演分析。</div>
-                <img src="不可取消露出质疑推演.jpeg" alt="不可取消露出逻辑质疑推演" style="width:100%;max-width:1600px;margin-top:12px;border:1px solid var(--border);border-radius:var(--radius-sm);">
-                <div class="flow-steps" style="margin-top:10px;">
-                  <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">1</div><div class="fs-text">RP 合并 → RP 过滤 → 复制不可取消 RP → <strong>不可取消过滤</strong>（最后一道）</div></div>
-                  <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">2</div><div class="fs-text">配置为 <code style="font-family:monospace;font-size:11.5px">{}</code> → 所有不可取消 RP（含 -N RP）全部被过滤</div></div>
-                </div>
-              </div>
-            </div>
+        <div class="note-box" style="margin-top:12px;">
+          <strong>💡 坑位合并的两种互斥策略：</strong>
+          <div style="margin-top:6px;">
+            <strong>策略 A：RP 合并</strong>（Channel.MergeRatePlan.Config）— 每组坑位只保留 1 条最低价 RP，去重效果最好<br>
+            <strong>策略 B：坑位报价数量 + 最优取消政策</strong>（TopCountForBreakfastCancellation）— 每坑位可输出多条 RP，额外支持"最优取消政策"报价<br>
+            <em>两者不可同时使用，开启 RP 合并则 TopCount 完全不生效。</em>
           </div>
         </div>
 
-        <!-- OccupancyFilterConfig -->
-        <div class="config-item">
-          <div class="config-header" onclick="this.parentElement.classList.toggle('open');if(this.parentElement.classList.contains('open')){this.parentElement.querySelectorAll('.sub-module').forEach(function(s){s.classList.add('open')})}">
-            <div class="left">
-              <span class="config-key-tag">OccupancyFilterConfig</span>
-              <span class="config-brief">入住人数过滤</span>
-            </div>
-            <span class="config-toggle">▼</span>
-          </div>
-          <div class="config-summary">
-            <div class="summary-desc">过滤餐型/人数不一致的报价。按「床型筛选」和「餐食筛选」两步判断。</div>
-            <div class="summary-url"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Dia.Biz.Rate.OccupancyFilterConfig" target="_blank">wolf.didaadmin.com/.../OccupancyFilterConfig</a></div>
-            <div class="summary-badges">
-              <span class="badge badge-blue">两步筛选</span>
-              <span class="badge badge-teal">含儿童控制</span>
-            </div>
-
-            <div class="sub-module">
-              <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">床型筛选 + 餐食筛选 <span class="sm-toggle">▼</span></div>
-              <div class="sub-module-body">
-                <div class="detail-row"><strong>床型筛选：</strong>实际入住人数（成人 + 儿童）vs 床型默认可入住人数，可入住 < 实际 → 排除</div>
-                <div class="detail-row"><strong>餐食筛选：</strong>早餐份数 vs 实际入住人数
-                  <ul style="margin-top:4px;padding-left:18px;">
-                    <li>餐数 < 实际人数 → 排除</li>
-                    <li>"不含餐"不做检查直接保留</li>
-                    <li>餐数信息缺失 → 排除</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div class="sub-module">
-              <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">儿童计入规则 <span class="sm-toggle">▼</span></div>
-              <div class="sub-module-body">
-                <div class="detail-row">由 <span class="mono">MealType</span>（餐型）和 <span class="mono">BedType</span>（床型）控制：<strong>0 = 不含儿童，1 = 含儿童</strong></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- LowBalanceSwitchToCache -->
-        <div class="config-item">
-          <div class="config-header" onclick="this.parentElement.classList.toggle('open');if(this.parentElement.classList.contains('open')){this.parentElement.querySelectorAll('.sub-module').forEach(function(s){s.classList.add('open')})}">
-            <div class="left">
-              <span class="config-key-tag">LowBalanceSwitchToCacheClientScopes</span>
-              <span class="config-brief">低余额降级切缓存</span>
-            </div>
-            <span class="config-toggle">▼</span>
-          </div>
-          <div class="config-summary">
-            <div class="summary-desc">供应商余额不足时切换为缓存报价，降低实时请求量，避免查价失败。余额恢复后回到原先方式。</div>
-            <div class="summary-url"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/Channel.Rate.LowBalanceSwitchToCacheClientScopes" target="_blank">wolf.didaadmin.com/.../LowBalanceSwitchToCache</a></div>
-            <div class="summary-badges">
-              <span class="badge badge-orange">后台 Job 监控</span>
-              <span class="badge badge-green">自动恢复</span>
-            </div>
-
-            <div class="sub-module">
-              <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">配置字段 + 执行逻辑 <span class="sm-toggle">▼</span></div>
-              <div class="sub-module-body">
-                <div class="detail-row"><strong>配置字段：</strong><span class="mono">SwitchCacheBalanceBaseLineCNY</span>（阈值，默认 500）+ <span class="mono">ClientIDList</span>（机构名单）</div>
-                <div class="flow-steps" style="margin-top:8px;">
-                  <div class="flow-step-row"><div class="fs-num" style="background:var(--orange)">1</div><div class="fs-text">Job 持续监控名单内机构余额</div></div>
-                  <div class="flow-step-row"><div class="fs-num" style="background:var(--orange)">2</div><div class="fs-text">余额 < 阈值 → 实时查询切换为缓存查询</div></div>
-                  <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">3</div><div class="fs-text">余额恢复 → <strong>恢复为原先方式</strong>（实时就实时，缓存就缓存，不主动覆盖）</div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ═══ Section ④ 输出策略 ═══ -->
-    <div class="section" id="sec-3">
-      <div class="section-title">④ 输出策略</div>
-      <div class="section-desc">RP 经过以上环节后，最终输出前的最后处理：坑位报价数量控制、最优取消政策、复制不可取消 RP 等。</div>
-
-      <div class="config-list">
-
-        <!-- 4.1 引用 -->
-        <div class="config-item">
-          <div class="config-header" onclick="this.parentElement.classList.toggle('open');if(this.parentElement.classList.contains('open')){this.parentElement.querySelectorAll('.sub-module').forEach(function(s){s.classList.add('open')})}">
-            <div class="left">
-              <span class="config-key-tag">4.1 RP 合并 / 轮转</span>
-              <span class="config-brief">详见 section ② 坑位合并</span>
-            </div>
-            <span class="config-toggle">▼</span>
-          </div>
-          <div class="config-summary">
-            <div class="summary-desc">RP 合并/轮转逻辑详见 section ②，此处不再重复。</div>
-          </div>
-        </div>
-
-        <!-- TopCount -->
+        <!-- TopCount（从输出策略移入） -->
         <div class="config-item">
           <div class="config-header" onclick="this.parentElement.classList.toggle('open');if(this.parentElement.classList.contains('open')){this.parentElement.querySelectorAll('.sub-module').forEach(function(s){s.classList.add('open')})}">
             <div class="left">
               <span class="config-key-tag">TopCountForBreakfastCancellation</span>
-              <span class="config-brief">坑位报价数量 + 最优取消政策</span>
+              <span class="config-brief">策略B：坑位报价数量 + 最优取消政策（与 RP 合并互斥）</span>
             </div>
             <span class="config-toggle">▼</span>
           </div>
           <div class="config-summary">
-            <div class="summary-desc">按「餐型 + 取消政策」坑位控制报价输出数量，2.0 额外输出「最优取消政策」报价，满足 B2C 用户对"临近入住仍可退"的高溢价需求。</div>
+            <div class="summary-desc"><strong>坑位合并策略 B</strong>，与 RP 合并（策略 A）互斥。按「餐型 + 取消政策」坑位控制报价输出数量，2.0 额外输出「最优取消政策」报价，满足 B2C 用户对"临近入住仍可退"的高溢价需求。</div>
             <div class="summary-url"><strong>配置地址：</strong><a href="https://wolf.didaadmin.com/ConfigurationCenter/Editor/30/DidaAPI.Config.TopCountForBreakfastCancellation" target="_blank">wolf.didaadmin.com/.../TopCountForBreakfastCancellation</a></div>
             <div class="summary-badges">
               <span class="badge badge-red">与 RP 合并互斥</span>
@@ -720,6 +706,15 @@ else → 正常输出</div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ═══ Section ④ 输出策略 ═══ -->
+    <div class="section" id="sec-3">
+      <div class="section-title">④ 输出策略</div>
+      <div class="section-desc">RP 经过过滤和合并后，最终输出前的处理：复制不可取消 RP、带入离时间等。</div>
+
+      <div class="config-list">
 
         <!-- 带入离时间 -->
         <div class="config-item">
@@ -782,7 +777,7 @@ else → 正常输出</div>
                   <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">2</div><div class="fs-text">复制可取消 RP，标记 <span class="mono">IsForceAsNonRefund = True</span></div></div>
                   <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">3</div><div class="fs-text"><strong>不参与 RP 合并</strong>（IsForceAsNonRefund 不同，天然分属不同组）</div></div>
                 </div>
-                <div class="formula-box" style="margin-top:10px;">执行顺序：RP 合并 → RP 过滤 → 复制不可取消 RP → 不可取消过滤（最后一道关卡）</div>
+                <div class="formula-box" style="margin-top:10px;">执行顺序：RP 过滤 → RP 合并 → 复制不可取消 RP → 不可取消过滤（最后一道关卡）</div>
               </div>
             </div>
           </div>
@@ -810,9 +805,9 @@ else → 正常输出</div>
             <div class="flow-steps">
               <div class="flow-step-row"><div class="fs-num" style="background:var(--accent)">①</div><div class="fs-text"><strong>国籍处理</strong> — 决定用什么国籍去查供应商</div></div>
               <div class="flow-step-row"><div class="fs-num" style="background:var(--text-muted)"></div><div class="fs-text">拿到供应商原始报价（SS 返回）</div></div>
-              <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">②</div><div class="fs-text"><strong>坑位合并</strong> — 按房型+床型+餐型+能否取消分组聚合</div></div>
-              <div class="flow-step-row"><div class="fs-num" style="background:var(--orange)">③</div><div class="fs-text"><strong>逐条 RP 过滤</strong> — 国籍限制 / 到店付服务费 / 不可取消过滤 / 入住人数过滤 / 低余额降级</div></div>
-              <div class="flow-step-row"><div class="fs-num" style="background:var(--purple)">④</div><div class="fs-text"><strong>输出策略</strong> — 坑位数量控制 / 最优取消政策 / 复制不可取消 RP / 带入离时间</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--orange)">②</div><div class="fs-text"><strong>逐条 RP 过滤</strong> — 国籍限制 / 到店付服务费 / 不可取消过滤 / 入住人数过滤 / 低余额降级</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">③</div><div class="fs-text"><strong>坑位合并（含多种策略）</strong> — 策略A：RP合并去重 / 策略B：坑位报价数量+最优取消政策（互斥）</div></div>
+              <div class="flow-step-row"><div class="fs-num" style="background:var(--purple)">④</div><div class="fs-text"><strong>输出策略</strong> — 复制不可取消 RP / 带入离时间 / 动态截止天数</div></div>
               <div class="flow-step-row"><div class="fs-num" style="background:var(--teal)"></div><div class="fs-text"><strong>返回渠道报价</strong></div></div>
             </div>
             <div class="note-box">验价阶段同理：请求进入 → 缓存对比 → 返回结果</div>
