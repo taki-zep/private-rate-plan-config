@@ -185,6 +185,7 @@
 <div class="main">
   <header class="header">
     <div class="breadcrumb"><a href="#">RP 露出管理</a><span class="sep">/</span>配置总览</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-top:4px;"><em>最后更新：2026-09-29</em></div>
     <!-- <a href="https://github.com/taki-zep/private-rate-plan-config/blob/main/渠道侧报价逻辑梳理.md" target="_blank" class="ref-doc-btn">📄 参考文档</a> -->
   </header>
 
@@ -644,15 +645,6 @@ else → 正常输出</div>
           </div>
         </div>
 
-        <div class="note-box" style="margin-top:12px;">
-          <strong>💡 坑位合并的两种互斥策略：</strong>
-          <div style="margin-top:6px;">
-            <strong>策略 A：RP 合并</strong>（Channel.MergeRatePlan.Config）— 每组坑位只保留 1 条最低价 RP，去重效果最好<br>
-            <strong>策略 B：坑位报价数量 + 最优取消政策</strong>（TopCountForBreakfastCancellation）— 每坑位可输出多条 RP，额外支持"最优取消政策"报价<br>
-            <em>两者不可同时使用，开启 RP 合并则 TopCount 完全不生效。</em>
-          </div>
-        </div>
-
         <!-- TopCount（从输出策略移入） -->
         <div class="config-item">
           <div class="config-header" onclick="this.parentElement.classList.toggle('open');if(this.parentElement.classList.contains('open')){this.parentElement.querySelectorAll('.sub-module').forEach(function(s){s.classList.add('open')})}">
@@ -705,6 +697,15 @@ else → 正常输出</div>
                 <div class="note-box"><strong>Dida 对"可取消"的定义：</strong>下单那一刻可取消，就算可取消。</div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div class="note-box" style="margin-top:12px;">
+          <strong> 坑位合并的两种互斥策略：</strong>
+          <div style="margin-top:6px;">
+            <strong>策略 A：RP 合并</strong>（Channel.MergeRatePlan.Config）— 每组坑位只保留 1 条最低价 RP，去重效果最好<br>
+            <strong>策略 B：坑位报价数量 + 最优取消政策</strong>（TopCountForBreakfastCancellation）— 每坑位可输出多条 RP，额外支持"最优取消政策"报价<br>
+            <em>两者不可同时使用，开启 RP 合并则 TopCount 完全不生效。</em>
           </div>
         </div>
       </div>
