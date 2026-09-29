@@ -313,6 +313,140 @@
                 </table>
               </div>
             </div>
+
+            <div class="sub-module">
+              <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">📖 场景举例：不同配置对报价露出的影响 <span class="sm-toggle">▼</span></div>
+              <div class="sub-module-body">
+                <div class="note-box" style="margin-bottom:14px;"><strong>一句话总结：</strong>没配置 → 国籍为空时不做保护，RP 因国籍不匹配被大量过滤；有配置 → 触发两个独立机制：① 标记国籍 CN（解决请求缺国籍、供应商没法查的问题）+ ② 忽略国籍限制（按档位规则控制 RP 露出范围：International 全露 / Domestic 只露酒店国籍 / China 只露 CN/TW/HK）。CN 标记只影响查价入参，不参与档位过滤判断。</div>
+                <div class="detail-row" style="margin-bottom:10px;"><strong>统一假设场景：</strong>机构 DidaOpaq，供应商 429（EBK+DC），泰国酒店（国籍 TH），查价请求<strong>未传国籍</strong>。供应商返回 5 条 RP：</div>
+                <table class="detail-table" style="margin-bottom:12px;">
+                  <thead><tr><th>RP</th><th>售卖国籍</th><th>说明</th></tr></thead>
+                  <tbody>
+                    <tr><td>RP1</td><td class="mono">TH</td><td>仅泰国客人</td></tr>
+                    <tr><td>RP2</td><td class="mono">TH</td><td>仅泰国客人</td></tr>
+                    <tr><td>RP3</td><td class="mono">International</td><td>任意国籍</td></tr>
+                    <tr><td>RP4</td><td class="mono">CN</td><td>仅中国客人</td></tr>
+                    <tr><td>RP5</td><td class="mono">TH</td><td>仅泰国客人</td></tr>
+                  </tbody>
+                </table>
+
+                <div class="sub-module">
+                  <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">场景 A：不配置 SubChannelID（默认行为） <span class="sm-toggle">▼</span></div>
+                  <div class="sub-module-body">
+                    <div class="flow-steps">
+                      <div class="flow-step-row"><div class="fs-num" style="background:var(--text-muted)">1</div><div class="fs-text">国籍为空，触发条件不满足（无 SubChannelID 配置）→ 不触发忽略国籍</div></div>
+                      <div class="flow-step-row"><div class="fs-num" style="background:var(--text-muted)">2</div><div class="fs-text">用空国籍查供应商，供应商返回 5 条 RP</div></div>
+                      <div class="flow-step-row"><div class="fs-num" style="background:var(--red)">3</div><div class="fs-text">国籍过滤：空国籍与 TH/CN 都不匹配 → RP1、RP2、RP4、RP5 被过滤</div></div>
+                    </div>
+                    <table class="detail-table" style="margin-top:8px;">
+                      <thead><tr><th>RP</th><th>售卖国籍</th><th>结果</th></tr></thead>
+                      <tbody>
+                        <tr><td>RP1</td><td class="mono">TH</td><td style="color:var(--red)"> 过滤</td></tr>
+                        <tr><td>RP2</td><td class="mono">TH</td><td style="color:var(--red)">❌ 过滤</td></tr>
+                        <tr><td>RP3</td><td class="mono">International</td><td style="color:var(--green)">✅ 露出</td></tr>
+                        <tr><td>RP4</td><td class="mono">CN</td><td style="color:var(--red)">❌ 过滤</td></tr>
+                        <tr><td>RP5</td><td class="mono">TH</td><td style="color:var(--red)"> 过滤</td></tr>
+                      </tbody>
+                    </table>
+                    <div class="note-box warn" style="margin-top:8px;"><strong>结果：</strong>5 条 RP 只剩 1 条（International），大量报价因国籍不匹配被过滤</div>
+                  </div>
+                </div>
+
+                <div class="sub-module">
+                  <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">场景 B：配置 International（外宾） <span class="sm-toggle">▼</span></div>
+                  <div class="sub-module-body">
+                    <div class="flow-steps">
+                      <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">1</div><div class="fs-text">三个触发条件全部满足 → 自动标记国籍 CN + 标记忽略国籍限制</div></div>
+                      <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">2</div><div class="fs-text">供应商返回 5 条 RP</div></div>
+                      <div class="flow-step-row"><div class="fs-num" style="background:var(--green)">3</div><div class="fs-text">国籍过滤环节：<strong>跳过</strong>（已标记忽略国籍限制）→ 全部 RP 保留</div></div>
+                    </div>
+                    <table class="detail-table" style="margin-top:8px;">
+                      <thead><tr><th>RP</th><th>售卖国籍</th><th>结果</th></tr></thead>
+                      <tbody>
+                        <tr><td>RP1</td><td class="mono">TH</td><td style="color:var(--green)">✅ 露出</td></tr>
+                        <tr><td>RP2</td><td class="mono">TH</td><td style="color:var(--green)">✅ 露出</td></tr>
+                        <tr><td>RP3</td><td class="mono">International</td><td style="color:var(--green)">✅ 露出</td></tr>
+                        <tr><td>RP4</td><td class="mono">CN</td><td style="color:var(--green)">✅ 露出</td></tr>
+                        <tr><td>RP5</td><td class="mono">TH</td><td style="color:var(--green)">✅ 露出</td></tr>
+                      </tbody>
+                    </table>
+                    <div class="note-box" style="margin-top:8px;background:var(--green-light);border-left-color:var(--green);"><strong>结果：</strong>5 条 RP 全部露出（最宽松）</div>
+                  </div>
+                </div>
+
+                <div class="sub-module">
+                  <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">场景 C：配置 Domestic（内宾） <span class="sm-toggle">▼</span></div>
+                  <div class="sub-module-body">
+                    <div class="flow-steps">
+                      <div class="flow-step-row"><div class="fs-num" style="background:var(--orange)">1</div><div class="fs-text">三个触发条件全部满足 → 自动标记国籍 CN + 标记忽略国籍限制</div></div>
+                      <div class="flow-step-row"><div class="fs-num" style="background:var(--orange)">2</div><div class="fs-text">供应商返回 5 条 RP</div></div>
+                      <div class="flow-step-row"><div class="fs-num" style="background:var(--red)">3</div><div class="fs-text">国籍过滤：虽标记忽略限制，但 Domestic 策略要求<strong>只卖酒店国籍 RP</strong> → 非 TH 的 RP 被过滤</div></div>
+                    </div>
+                    <table class="detail-table" style="margin-top:8px;">
+                      <thead><tr><th>RP</th><th>售卖国籍</th><th>结果</th><th>原因</th></tr></thead>
+                      <tbody>
+                        <tr><td>RP1</td><td class="mono">TH</td><td style="color:var(--green)">✅ 露出</td><td>匹配酒店国籍 TH</td></tr>
+                        <tr><td>RP2</td><td class="mono">TH</td><td style="color:var(--green)">✅ 露出</td><td>匹配酒店国籍 TH</td></tr>
+                        <tr><td>RP3</td><td class="mono">International</td><td style="color:var(--red)">❌ 过滤</td><td>非酒店国籍</td></tr>
+                        <tr><td>RP4</td><td class="mono">CN</td><td style="color:var(--red)">❌ 过滤</td><td>非酒店国籍</td></tr>
+                        <tr><td>RP5</td><td class="mono">TH</td><td style="color:var(--green)">✅ 露出</td><td>匹配酒店国籍 TH</td></tr>
+                      </tbody>
+                    </table>
+                    <div class="note-box warn" style="margin-top:8px;"><strong>结果：</strong>5 条 RP 露出 3 条（仅泰国国籍 RP）（最严格）</div>
+                  </div>
+                </div>
+
+                <div class="sub-module">
+                  <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">场景 D：配置 China（中宾） <span class="sm-toggle">▼</span></div>
+                  <div class="sub-module-body">
+                    <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin:18px 0 8px;padding:6px 10px;background:#f8fafc;border-radius:var(--radius-sm);border-left:3px solid var(--accent);">场景 D：配置 China（中宾）</div>
+                    <div class="flow-steps">
+                      <div class="flow-step-row"><div class="fs-num" style="background:var(--accent)">1</div><div class="fs-text">三个触发条件全部满足 → 自动标记国籍 CN + 标记忽略国籍限制</div></div>
+                      <div class="flow-step-row"><div class="fs-num" style="background:var(--accent)">2</div><div class="fs-text">供应商返回 5 条 RP</div></div>
+                      <div class="flow-step-row"><div class="fs-num" style="background:var(--red)">3</div><div class="fs-text">国籍过滤：China 策略允许卖 <strong>CN / TW / HK</strong> 的 RP → 非大中华区的 RP 被过滤</div></div>
+                    </div>
+                    <table class="detail-table" style="margin-top:8px;">
+                      <thead><tr><th>RP</th><th>售卖国籍</th><th>结果</th><th>原因</th></tr></thead>
+                      <tbody>
+                        <tr><td>RP1</td><td class="mono">TH</td><td style="color:var(--red)">❌ 过滤</td><td>TH 不属于 CN/TW/HK</td></tr>
+                        <tr><td>RP2</td><td class="mono">TH</td><td style="color:var(--red)">❌ 过滤</td><td>TH 不属于 CN/TW/HK</td></tr>
+                        <tr><td>RP3</td><td class="mono">International</td><td style="color:var(--green)">✅ 露出</td><td>任意国籍可卖</td></tr>
+                        <tr><td>RP4</td><td class="mono">CN</td><td style="color:var(--green)">✅ 露出</td><td>CN 属于大中华区</td></tr>
+                        <tr><td>RP5</td><td class="mono">TH</td><td style="color:var(--red)">❌ 过滤</td><td>TH 不属于 CN/TW/HK</td></tr>
+                      </tbody>
+                    </table>
+                    <div class="note-box warn" style="margin-top:8px;"><strong>结果：</strong>5 条 RP 露出 2 条（International + CN）</div>
+                  </div>
+                </div>
+
+                <div class="sub-module">
+                  <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">场景 E：配置关闭（NationalitySubChannelID: {}） <span class="sm-toggle">▼</span></div>
+                  <div class="sub-module-body">
+                    <div class="flow-steps">
+                      <div class="flow-step-row"><div class="fs-num" style="background:var(--text-muted)">1</div><div class="fs-text">配置为空对象 → 触发条件不满足（无有效 SubChannelID）→ 不触发忽略国籍</div></div>
+                      <div class="flow-step-row"><div class="fs-num" style="background:var(--text-muted)">2</div><div class="fs-text">行为与<strong>场景 A（不配置）</strong>完全一致</div></div>
+                    </div>
+                    <div class="note-box" style="margin-top:8px;"><strong>结果：</strong>5 条 RP 只剩 1 条（International），与不配置相同</div>
+                  </div>
+                </div>
+
+                <div class="sub-module">
+                  <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">对比总结 <span class="sm-toggle">▼</span></div>
+                  <div class="sub-module-body">
+                    <table class="detail-table">
+                      <thead><tr><th>场景</th><th>配置</th><th>露出 RP</th><th>说明</th></tr></thead>
+                      <tbody>
+                        <tr><td>A</td><td>不配置</td><td>1 条</td><td>国籍为空无保护，大量 RP 被过滤</td></tr>
+                        <tr><td>B</td><td class="mono">International</td><td>5 条</td><td style="color:var(--green);font-weight:600;">最宽松，什么国籍都能卖</td></tr>
+                        <tr><td>C</td><td class="mono">Domestic</td><td>3 条</td><td>最严格，只卖酒店国籍 RP</td></tr>
+                        <tr><td>D</td><td class="mono">China</td><td>2 条</td><td>只卖大中华区（CN/TW/HK）RP</td></tr>
+                        <tr><td>E</td><td>关闭 {}</td><td>1 条</td><td>等同不配置</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
