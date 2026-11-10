@@ -185,7 +185,7 @@
 <div class="main">
   <header class="header">
     <div class="breadcrumb"><a href="#">RP 露出管理</a><span class="sep">/</span>配置总览</div>
-    <div style="font-size:12px;color:var(--text-muted);margin-top:4px;"><em>最后更新：2026-09-29</em></div>
+    <div style="font-size:12px;color:var(--text-muted);margin-top:4px;"><em>最后更新：2026-11-10</em></div>
     <!-- <a href="https://github.com/taki-zep/private-rate-plan-config/blob/main/渠道侧报价逻辑梳理.md" target="_blank" class="ref-doc-btn">📄 参考文档</a> -->
   </header>
 
@@ -814,6 +814,24 @@ else → 正常输出</div>
             </div>
 
             <div class="sub-module">
+              <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">默认值 + 互填默认行为 <span class="sm-toggle">▼</span></div>
+              <div class="sub-module-body">
+                <table class="detail-table">
+                  <thead><tr><th>配置项</th><th>默认值</th></tr></thead>
+                  <tbody>
+                    <tr><td class="mono" style="font-size:10px">MappedRoomTypeTopCountForBreakfastCancellation</td><td>已匹配房型，RoomCount = <strong>4</strong></td></tr>
+                    <tr><td class="mono" style="font-size:10px">UnmappedRoomTypeTopCountForBreakfastCancellation</td><td>未匹配房型，forNoRoomCount = <strong>10</strong></td></tr>
+                  </tbody>
+                </table>
+                <ul style="margin-top:8px;margin-bottom:0;padding-left:20px;">
+                  <li><strong>互填默认：</strong>两个配置项任意一个填值后，另一个未填时自动取各自的默认值，且配置变为开启状态。</li>
+                  <li><strong>校验规则：</strong>数字且必须 &gt; 0，填 0 不生效。</li>
+                  <li><strong>实际效果：</strong>只要任一配置有合法值（&gt; 0），TopCount 整体即生效；未填的那一个按默认值（4 或 10）参与坑位控制。</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="sub-module">
               <div class="sub-module-header" onclick="event.stopPropagation();this.parentElement.classList.toggle('open')">4 坑位 + 示例 <span class="sm-toggle">▼</span></div>
               <div class="sub-module-body">
                 <div class="detail-row"><strong>4 个基础坑位：</strong>含早/不含早 × 可取消/不可取消，每个坑位出 N 条最低价</div>
@@ -1004,5 +1022,5 @@ else → 正常输出</div>
   });
 </script>
 </body>
-<div class="last-updated">最后更新：2026-09-29</div>
+<div class="last-updated">最后更新：2026-11-10</div>
 </html>
